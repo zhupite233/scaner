@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>扫描报表</title>
+    <link rel="stylesheet" href="/static/report2/styles/bound.min.css">
+</head>
+
+<body>
+    <header class="report-header" id="top">
+        <div class="content-default header-con">
+            <img src="/static/report2/imgs/logo.png" alt="云盾-弱点扫描报告" class="report-align">
+            <a id="download_pdf" href="" target="_blank" class="report-link report-align">&nbsp;下载报告</a>
+        </div>
+    </header>
+    <div class="bg-container"></div>
+    <div class="container content-default">
+        <img src="/static/report2/imgs/content_top.png" alt="">
+        <div class="content-main">
+            <div class="part">
+                <ul class="first-part">
+                    <li class="title-container"><span class="number">1</span>
+                        <h3 class="part-title">扫描概览</h3></li>
+                    <li class="part-content">
+                        <p class="content-title">扫描任务</p>
+                        <p class="content-web" id="domain">www.yundun.com</p>
+                    </li>
+                    <li class="part-content">
+                        <p class="content-title">发起扫描时间</p>
+                        <p class="content-web"><span id="start_time">2016-12-01 12:05:32</span></p>
+                    </li>
+                    <li class="part-content">
+                        <p class="content-title">完成扫描时间</p>
+                        <p class="content-web"><span id="end_time">2016-12-01 12:05:50</span></p>
+                    </li>
+                </ul>
+            </div>
+            <div class="part total-detail">
+                <div style="width:480px;height:300px;">
+                    <canvas id="myChart" width="480" height="300"></canvas>
+                </div>
+                <div class="dashboard-data">
+                    <div class="total">
+                        <div class="total-data" id="total_data">626</div>
+                        <div class="total-title">漏洞总数</div>
+                    </div>
+                    <div class="low-risk"><span class="title-ch">低危</span>
+                        <div class="data">
+                            <div class="data-inner" id="low_total">6820</div>
+                            <div class="title-en">Low
+                                <br>Risk</div>
+                        </div>
+                    </div>
+                    <div class="intermediate-risk"><span class="title-ch">中危</span>
+                        <div class="data">
+                            <div class="data-inner" id="mid_total">4</div>
+                            <div class="title-en">Intermediate
+                                <br>Risk</div>
+                        </div>
+                    </div>
+                    <div class="info"><span class="title-ch">信息收集</span>
+                        <div class="data">
+                            <div class="data-inner" id="info_total">1457810</div>
+                            <div class="title-en">Informations
+                                <br>Collection</div>
+                        </div>
+                    </div>
+                    <div class="high-risk"><span class="title-ch">高危</span>
+                        <div class="data">
+                            <div class="data-inner" id="high_total">2</div>
+                            <div class="title-en">High
+                                <br>Risk</div>
+                        </div>
+                    </div>
+                    <div class="owasp"><span class="title-ch">OWASP</span>
+                        <div class="data">
+                            <div class="data-inner" id="OWASP_data">4</div>
+                            <div class="title-en">Top
+                                <br>10</div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+            </div>
+            <div class="part">
+                <canvas id="barChart" width="1128" height="624"></canvas>
+                <hr>
+            </div>
+            <div class="part">
+                <button class="btn-default">漏洞列表</button>
+                <div>
+                    <table class="report-table">
+                        <thead>
+                            <tr class="headline-default">
+                                <th class="color1st">漏洞名称</th>
+                                <th class="color2nd">数量</th>
+                                <th class="color3rd">漏洞等级</th>
+                            </tr>
+                        </thead>
+                        <tbody id="test2">
+                            <tr>
+                                <td>易受攻击的js库</td>
+                                <td>1</td>
+                                <td><span class="mid-level dan-default td-adjust">中危</span></td>
+
+                            </tr>
+                            <tr>
+                                <td>易受攻击的js库</td>
+                                <td>1</td>
+                                <td><span class="low-level dan-default td-adjust">低危</span></td>
+
+                            </tr>
+                            <tr>
+                                <td>易受攻击的js库</td>
+                                <td>1</td>
+                                <td><span class="high-level dan-default td-adjust">高危</span></td>
+
+                            </tr>
+                            <tr>
+                                <td>易受攻击的js库</td>
+                                <td>1</td>
+                                <td><span class="info-level dan-default td-adjust">信息</span></td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr class="fitsize">
+            </div>
+            <div class="part" id="details">
+
+                <div class="title-container setheight"><span class="number">2</span>
+                    <h3 class="part-title">漏洞详情</h3></div>
+                <div class="panel setting-radius">
+                    <div class="panel-head setting-radius"><span>1.框架选项标题消失</span><span class="low-level dan-default adjust">低危漏洞</span>
+                        <div class="handle">查看详情</div>
+                    </div>
+                    <div class="panel-body">
+                        <ul>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                                <p>页面可以轻易构建框架</p>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="panel setting-radius">
+                    <div class="panel-head setting-radius"><span>1.框架选项标题消失</span><span class="low-level dan-default adjust">低危漏洞</span>
+                        <div class="handle">查看详情</div>
+                    </div>
+                    <div class="panel-body hide">
+                        <ul>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                                <p>页面可以轻易构建框架</p>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                            <li>
+                                <h4>漏洞描述</h4>
+                                <p>页面可以轻易构建框架</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="part">
+                <a class="btn-top" href="javascript:scroll(0,0)">返回顶部</a>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="/static/report2/scripts/bound.min.js"></script>
+{% raw %}
+<script id="tpl" type="text/x-handlebars-template">
+    {{#high}}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{total}}</td>
+        <td><span class="{{level}}-level dan-default td-adjust">{{level}}</span></td>
+
+    </tr>
+    {{/high}} {{#medium}}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{total}}</td>
+        <td><span class="{{level}}-level dan-default td-adjust">{{level}}</span></td>
+
+    </tr>
+    {{/medium}} {{#low}}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{total}}</td>
+        <td><span class="{{level}}-level dan-default td-adjust">{{level}}</span></td>
+
+    </tr>
+    {{/low}} {{#info}}
+    <tr>
+        <td>{{name}}</td>
+        <td>{{total}}</td> -->
+        <td><span class="{{level}}-level dan-default td-adjust">{{level}}</span></td>
+
+    </tr>
+    {{/info}}
+</script>
+<script id="details_temp" type="text/x-handlebars-template">
+    <div class="title-container setheight"><span class="number">2</span>
+        <h3 class="part-title">漏洞详情</h3></div>
+    <!-- <h3 class="part-title">漏洞详情</h3></div> -->
+    {{#high}}
+    <div class="panel setting-radius">
+        <div class="panel-head setting-radius"><span>{{name}}</span><span class="{{level}}-level dan-default adjust">{{level}}</span>
+            <div class="handle">查看详情</div>
+        </div>
+        <div class="panel-body hide">
+            <ul>
+                <li>
+                    <h4>漏洞描述</h4>
+                    <p>{{{desc}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>漏洞危害</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>解决方案</h4>
+                    <p>{{{solution}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>参考</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>漏洞验证</h4>
+                    <p>
+                        {{#with list}} {{#each this}}
+                        <ul>
+                            <li>
+                                <h5>详情</h5>
+                                <p></p>
+                            </li>
+                            <li>
+                                <h5>请求</h5>
+                                <p>{{{request}}}</p>
+                            </li>
+                            <li>
+                                <h5>响应</h5>
+                                <p>{{{response}}}</p>
+                            </li>
+                        </ul>
+                        {{/each}} {{/with}}
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {{/high}} {{#medium}}
+    <div class="panel setting-radius">
+        <div class="panel-head setting-radius"><span>{{name}}</span><span class="{{level}}-level dan-default adjust">{{level}}</span>
+            <div class="handle">查看详情</div>
+        </div>
+        <div class="panel-body hide">
+            <ul>
+                <li>
+                    <h4>漏洞描述</h4>
+                    <p>{{{desc}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>漏洞危害</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>解决方案</h4>
+                    <p>{{{solution}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>参考</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>漏洞验证</h4>
+                    <p>
+                        {{#with list}} {{#each this}}
+                        <ul>
+                            <li>
+                                <h5>详情</h5>
+                                <p></p>
+                            </li>
+                            <li>
+                                <h5>请求</h5>
+                                <p>{{{request}}}</p>
+                            </li>
+                            <li>
+                                <h5>响应</h5>
+                                <p>{{{response}}}</p>
+                            </li>
+                        </ul>
+                        {{/each}} {{/with}}
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {{/medium}} {{#low}}
+    <div class="panel setting-radius">
+        <div class="panel-head setting-radius"><span>{{name}}</span><span class="{{level}}-level dan-default adjust">{{level}}</span>
+            <div class="handle">查看详情</div>
+        </div>
+        <div class="panel-body hide">
+            <ul>
+                <li>
+                    <h4>漏洞描述</h4>
+                    <p>{{{desc}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>漏洞危害</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>解决方案</h4>
+                    <p>{{{solution}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>参考</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>漏洞验证</h4>
+                    <p>
+                        {{#with list}} {{#each this}}
+                        <ul>
+                            <li>
+                                <h5>详情</h5>
+                                <p></p>
+                            </li>
+                            <li>
+                                <h5>请求</h5>
+                                <p>{{{request}}}</p>
+                            </li>
+                            <li>
+                                <h5>响应</h5>
+                                <p>{{{response}}}</p>
+                            </li>
+                        </ul>
+                        {{/each}} {{/with}}
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {{/low}} {{#info}}
+    <div class="panel setting-radius">
+        <div class="panel-head setting-radius"><span>{{name}}</span><span class="{{level}}-level dan-default adjust">{{level}}</span>
+            <div class="handle">查看详情</div>
+        </div>
+        <div class="panel-body hide">
+            <ul>
+                <li>
+                    <h4>漏洞描述</h4>
+                    <p>{{{desc}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>漏洞危害</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>解决方案</h4>
+                    <p>{{{solution}}}</p>
+                </li>
+<!--
+                <li>
+                    <h4>参考</h4>
+                    <p>页面可以轻易构建框架</p>
+                </li>
+-->
+                <li>
+                    <h4>漏洞验证</h4>
+                    <p>
+                        {{#with list}} {{#each this}}
+                        <ul>
+                            <li>
+                                <h5>详情</h5>
+                                <p></p>
+                            </li>
+                            <li>
+                                <h5>请求</h5>
+                                <p>{{{request}}}</p>
+                            </li>
+                            <li>
+                                <h5>响应</h5>
+                                <p>{{{response}}}</p>
+                            </li>
+                        </ul>
+                        {{/each}} {{/with}}
+                    </p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {{/info}}
+</script>
+{% endraw %}
+<script type="text/javascript">
+    //用jquery获取模板
+    var tpl = $("#tpl").html();
+    var tpl_list = $("#details_temp").html();
+    //预编译模板
+    var template = Handlebars.compile(tpl);
+    var template_list = Handlebars.compile(tpl_list);
+    //模拟json数据
+    var testjson = {{ jsondata|safe }}
+
+    // 指定图表的配置项和数据
+    //匹配json内容
+    var html = template(testjson);
+    var html_list = template_list(testjson);
+    //输入模板
+    $('#test2').html(html);
+    $('#details').html(html_list);
+    //domain信息注入
+    $('#domain').html(testjson.domain);
+    //开始、结束时间
+    $('#start_time').html(testjson.start_time);
+    $('#end_time').html(testjson.end_time);
+    //漏洞个数
+    $('#high_total').html(testjson.stats.high);
+    $('#mid_total').html(testjson.stats.medium);
+    $('#low_total').html(testjson.stats.low);
+    $('#info_total').html(testjson.stats.info);
+    $('#download_pdf').attr("href", testjson.pdf);
+
+    function getTotal() {
+        var total_data = testjson.stats.high + testjson.stats.medium + testjson.stats.low + testjson.stats.info;
+        $('#total_data').html(total_data);
+    }
+    getTotal();
+    $('body').find('.dan-default').each(function(i, v) {
+        var $this = $(this),
+            distinguish = $this.text();
+        switch (distinguish) {
+            case 'high':
+                $this.text('高危');
+                break;
+            case 'med':
+                $this.text('中危');
+                break;
+            case 'low':
+                $this.text('低危');
+                break;
+            case 'info':
+                $this.text('信息');
+                break;
+        }
+    });
+</script>
+<script type="text/javascript">
+    $(function() {
+        var topMap = {
+            'A1': 'SQL注入',
+            'A2': '失效的身份认证和会话管理',
+            'A3': '跨站脚本(xss)',
+            'A4': '不安全的直接引用对象,',
+            'A5': '安全配置错误',
+            'A6': '敏感信息泄漏',
+            'A7': '功能级访问控制缺失',
+            'A8': '跨站请求伪造(CSRF)',
+            'A9': '使用含有已知漏洞组件',
+            'A10': '未验证重定向转发'
+        };
+        var ctx = document.getElementById('myChart');
+        var bar = document.getElementById('barChart');
+        var myChart = echarts.init(ctx);
+        var barChart = echarts.init(bar);
+        var radardata = [];
+        var owasp_top10data = [];
+        var t10 = testjson.owasp_top10;
+        radardata.push(testjson.stats.medium, testjson.stats.low, testjson.stats.high);
+        owasp_top10data.push(t10.A10,t10.A9,t10.A8,t10.A7,t10.A6,t10.A5,t10.A4,t10.A3,t10.A2,t10.A1);
+        function getTotal_owa(){
+            var total=0;
+            for(var i=0; i<owasp_top10data.length;i++){
+                total=total+owasp_top10data[i];
+            }
+            $('#OWASP_data').html(total);
+        }
+        getTotal_owa();
+        radar_option = {
+            title: {
+                text: '漏洞等级分布',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 16
+                },
+                borderColor: '#636871',
+                borderWidth: 1,
+                padding: 12
+            },
+            tooltip: {
+                show: true
+            },
+            legend: {},
+            radar: {
+                // shape: 'circle',
+                indicator: [{
+                    name: '中危(Mid-risk)',
+                }, {
+                    name: '低危(Low-risk)',
+                }, {
+                    name: '高危(High-risk)',
+                }],
+                name: {
+                    formatter: '{value}',
+                    textStyle: {
+                        color: '#fff',
+                        fontSize: 16
+                    }
+                },
+                splitLine: {
+                    lineStyle: {
+                        color: ['#777b83', '#5a6069', '#3a414d', '#2c3440']
+                    }
+                },
+                axisLine: {
+                    lineStyle: {
+                        color: '#484e59'
+                    }
+                },
+                splitArea: {
+                    areaStyle: {
+                        color: ['transparent']
+                    }
+                }
+            },
+            series: [{
+                name: '',
+                type: 'radar',
+                color: ['#0a91e3'],
+                label: {
+                    normal: {
+                        textStyle: {
+                            Color: ['#fff'],
+                            fontSize: 20
+                        }
+                    }
+                },
+                data: [{
+                    value: radardata,
+                    label: {
+                        normal: {
+                            show: true,
+                            formatter: function(params) {
+                                return params.value;
+                            }
+                        }
+                    }
+                }]
+            }]
+        };
+        bar_option = {
+            title: {
+                text: 'OWASP Top10 占比分布',
+                // subtext: '数据来自网络'
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 16
+                },
+                borderColor: '#636871',
+                borderWidth: 1,
+                padding: 12
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            textStyle: {
+                color: '#fff'
+            },
+            legend: {},
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01],
+                axisLine: {
+                    lineStyle: {
+                        color: '#fff'
+                    }
+                },
+                splitLine: {
+                    show: false
+                }
+            },
+            yAxis: {
+                type: 'category',
+                data: [topMap.A10, topMap.A9, topMap.A8, topMap.A7, topMap.A6, topMap.A5, topMap.A4, topMap.A3, topMap.A2, topMap.A1],
+                axisLine: {
+                    show: false
+                },
+                axisTick: {
+                    show: false,
+                },
+                axisLabel: {
+                    textStyle: {
+                        fontSize: 16,
+                    },
+                },
+            },
+            series: [{
+                type: 'bar',
+                barCategoryGap: 10,
+                data: owasp_top10data,
+                itemStyle: {
+                    normal: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 1, 1, [{
+                            offset: 0,
+                            color: '#02bbb9'
+                        }, {
+                            offset: 0.5,
+                            color: '#08a1a4'
+                        }, {
+                            offset: 1,
+                            color: '#007eae'
+                        }])
+                    }
+                },
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'right',
+                    }
+                }
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(radar_option);
+        barChart.setOption(bar_option);
+        // $.ajax({
+        //     url: "http://192.168.3.85:8090/api/v1/report2?scan_key=33247100b6de11e698f9005056c00008&job_id=f6fda258-dab0-4105-b32e-ff671e47287f",
+        //     dataType: 'jsonp',
+        //     data: '',
+        //     jsonp: 'callback',
+        //     jsonpCallback:"success_jsonpCallback",
+        //     success: function(result) {
+        //         var data_show=JSON.parse(result);
+        //         alert(result);
+        //     },
+        //     timeout: 3000
+        // });
+        /*****折叠面板*****/
+        var Accordion = function(el, multiple) {
+            this.el = el || {};
+            this.multiple = multiple || false;
+            var menuboxes = this.el.find('.panel-head');
+            menuboxes.on('click', {
+                el: this.el,
+                multiple: this.multiple
+            }, this.dropDown);
+        };
+        Accordion.prototype.dropDown = function(e) {
+            var $el = e.data.el,
+                $this = $(this),
+                $next = $this.next();
+            $next.slideToggle();
+            if (!e.data.multiple) {
+                $el.find('.panel-body').not($next).slideUp();
+                // $this.toggleClass('panel-head-spread', 'panel-head');
+            }
+
+        };
+        var details = new Accordion($('#details'), false);
+
+
+    });
+</script>
+
+</html>

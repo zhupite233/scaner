@@ -1,0 +1,929 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}用户管理{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class="active"><a data-toggle="tab" href="#adminRule">扫描规则</a></li>
+{#            <li class=""><a data-toggle="tab" href="#adminFamily">规则分类</a></li>#}
+
+        </ul>
+        <div class="tab-content padding-24">
+            {% macro macro_familys() %}
+
+                {% for family in rule_family %}
+                    <option value="{{ family.id }}">{{ family.name }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_ways() %}
+
+                {% for way in ways %}
+                    <option value="{{ way.rule_way }}">{{ way.rule_way }}-{{ way.describe }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_areas() %}
+                {% for area in areas %}
+                    <option value="{{ area.rule_area }}">{{ area.rule_area }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_codes() %}
+                <option value>&nbsp;</option>
+                {% for code in http_codes %}
+                    <option value="{{ code.http_code }}">{{ code.http_code }}-{{ code.code_info }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_tags() %}
+                <option value>&nbsp;</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.rule_tag }}">{{ tag.rule_tag }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_modes() %}
+                <option value>&nbsp;</option>
+                {% for mode in modes %}
+                    <option value="{{ mode.run_mode }}">{{ mode.run_mode }}</option>
+                {% endfor %}
+            {% endmacro %}
+
+            <div id="adminRule" class="tab-pane fade in active">
+                <div class="row"><div class="col-xs-12">
+                  {#  {%- if 'adminCreateUser' in session.get('selectors', ()) -%}  #}
+                        <a class="btn btn-xs btn-info" href=" {{ url_for('web.rule_add_html') }}">
+                            <i class="ace-icon fa fa-plus bigger-120"></i>添加规则
+                        </a>
+                   {# {%- endif -%}  #}
+                    <table id="dynamic-table" class="table table-striped ">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>注入区域</th>
+                            <th>注入方式</th>
+                            <th>注入点</th>
+                            <th>注入值</th>
+{#                            <th >判断方法</th>#}
+                             <th >规则类型</th>
+{#                            <th >规则TAG</th>#}
+                            <th>执行模式</th>
+{#                            <th>描述</th>#}
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%- for rule in rules -%}
+                            <tr id="rule-{{ rule.rule_id }}">
+                                <td>{{ rule.rule_id }}</td>
+                                <td>{{ rule.rule_name }}</td>
+                                <td>{{ rule.area }}</td>
+                                <td>{{ rule.inj_way }}</td>
+                                <td>{{ rule.inj_point }}</td>
+                                <td>{{ rule.inj_value }}</td>
+{#                                <td>{{ rule.judge }}</td>#}
+                                <td >{{ rule.rule_family | get_family_name_by_id }}</td>
+{#                                <td>{{ rule.rule_tag }}</td>#}
+                                <td>{{ rule.run_mode }}</td>
+{#                                <td>{{ rule.describe }}</td>#}
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+                                      {#    {%- if 'adminCreateUser' in session.get('selectors', ()) -%} #}
+                                            <a class="btn btn-xs btn-info" href="{{ url_for('web.rule_list') }}/{{ rule.rule_id }}">
+                                                详情编辑
+                                            </a>
+                                    {#    {%- endif %}
+                                        {%- if 'adminDeleteUser' in session.get('selectors', ()) -%}  #}
+                                            <button class="btn btn-xs btn-danger" onclick="del_rule('{{ rule.rule_id }}');">
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </button>
+                                    {#    {%- endif -%} #}
+                                    </div>
+                                </td>
+                            </tr>
+                        {%- endfor -%}
+                        </tbody>
+                    </table>
+                </div></div>
+            </div>
+{#            <div id="adminFamily" class="tab-pane fade">#}
+{#                <div class="row"><div class="col-xs-12">#}
+{#                    {%- if 'adminCreateGroup' in session.get('selectors', ()) -%}#}
+{#                        <button class="btn btn-xs btn-info" onclick="$('#modal-form-add-family').modal('show');">#}
+{#                            <i class="ace-icon fa fa-plus bigger-120"></i>#}
+{#                        </button>#}
+{#                    {%- endif -%}#}
+{#                    <table class="table table-striped table-bordered table-hover">#}
+{#                        <thead>#}
+{#                        <tr>#}
+{#                            <th>ID</th>#}
+{#                            <th>名称</th>#}
+{#                            <th>说明</th>#}
+{#                            <th>优先级</th>#}
+{#                            <th></th>#}
+{#                        </tr>#}
+{#                        </thead>#}
+{#                        <tbody>#}
+{#                        {%- for rule_type in rule_family -%}#}
+{#                            <tr id="family-{{ rule_type.id }}">#}
+{#                                <td>{{ rule_type.id }}</td>#}
+{#                                <td>{{ rule_type.name }}</td>#}
+{#                                <td>{{ rule_type.describe }}</td>#}
+{#                                <td>{{ rule_type.priority }}</td>#}
+{#                                <td>#}
+{#                                    <div class="hidden-sm hidden-xs btn-group">#}
+{#                                        {%- if 'adminCreateGroup' in session.get('selectors', ()) -%}#}
+{#                                            <button class="btn btn-xs btn-info" onclick="familyOnclick('{{ rule_type.id }}');">#}
+{#                                                <i class="ace-icon fa fa-pencil bigger-120"></i>#}
+{#                                            </button>#}
+{#                                        {%- endif -%}#}
+{#                                        {%- if 'adminDeleteGroup' in session.get('selectors', ()) -%}#}
+{#                                            <button class="btn btn-xs btn-danger" onclick="delete_family('{{ rule_type.id }}');">#}
+{#                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>#}
+{#                                            </button>#}
+{#                                        {%- endif -%}#}
+{#                                    </div>#}
+{#                                </td>#}
+{#                            </tr>#}
+{#                        {%- endfor -%}#}
+{#                        </tbody>#}
+{#                    </table>#}
+{#                </div></div>#}
+{#            </div>#}
+{##}
+{#        </div>#}
+{#    </div>#}
+{#    <div id="modal-form-add-rule" class="modal fade" tabindex="-1">#}
+{#        <div class="modal-dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <button type="button" class="close" onclick="$('#modal-form-add-rule').modal('hide');">&times;</button>#}
+{#                    <h4 class="blue bigger">创建规则:</h4>#}
+{#                </div>#}
+{#                <form class="form-horizontal">#}
+{#                    <div class="modal-body">#}
+{#                        <div class="row">#}
+{#                            <div class="col-xs-12 col-sm-12">#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-ruleName">规则名称：</label>#}
+{#                                    <div class="col-xs-12 col-sm-8">#}
+{#                                        <div class="clearfix">#}
+{#                                            <input required type="text" id="modal-form-add-ruleName" name="rule_name" class="col-xs-12 col-sm-10">#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-rule_family">规则类型：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-add-rule_family" name="rule_family" class="form-control">#}
+{#                                                {{ macro_familys() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-if_head">是否head方法：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <input id ="back-task-if_head" name="if_head" class="ace ace-switch ace-switch-6" type="checkbox" >#}
+{#                                             <span class="lbl"></span>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-rule_tag">规则TAG：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-add-rule_tag" name="rule_tag" class="form-control">#}
+{#                                                {{ macro_tags() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-run_mode">执行方式：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select required id="modal-form-add-run_mode" name="run_mode" class="form-control">#}
+{#                                                {{ macro_modes() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-rule_area">注入区域：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-add-rule_area" name="inj_area" class="form-control">#}
+{#                                                {{ macro_areas() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-rule_way">注入方式：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-add-rule_way" name="inj_way" class="form-control">#}
+{#                                                {{ macro_ways() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-inj_point">注入点：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-add-inj_point" name="inj_point" class="input-xlarge"  style="width:82%;height:40px"#}
+{#                                                      placeholder="请填写正则表达式，如：(path|page|download)"></textarea>   </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-inj_value">注入值：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-add-inj_value" name="inj_value" class="input-xlarge"  style="width:82%;height:60px"#}
+{#                                             required    placeholder="每行一个值，多个值请换行填写"></textarea>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-judge_code">判断(http_code)：</label>#}
+{#                                    <div class="row">#}
+{#                                        <div class="col-xs-2 col-sm-2">#}
+{#                                            <div class="clearfix">#}
+{#                                                 <select   id="modal-form-code_mode" name="code_mode" class="form-control" onclick="check_http_code()" >#}
+{#                                                     <option >&nbsp;</option>#}
+{#                                                     <option value="equal">等于</option>#}
+{#                                                     <option value="not_equal">不等于</option>#}
+{#                                                     <option value="range">范围</option>#}
+{#                                                </select>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{##}
+{#                                        <div class="col-xs-1 col-sm-1" id="div_judge_code21" style="display:none">#}
+{#                                            <div class="clearfix">#}
+{#                                                <label> 大于等于 </label>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-xs-2 col-sm-2" >#}
+{#                                            <div class="clearfix">#}
+{#                                                 <select   id="modal-form-judge_code" name="judge_code1" class="form-control">#}
+{#                                                    {{ macro_codes() }}#}
+{#                                                </select>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                        <div class="col-xs-1 col-sm-1" id="div_judge_code22" style="display:none">#}
+{#                                            <div class="clearfix">#}
+{#                                                <label> 小于等于 </label>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{##}
+{#                                        <div class="col-xs-2 col-sm-2" id="div_judge_code23" style="display:none">#}
+{##}
+{#                                            <div class="clearfix">#}
+{##}
+{#                                                 <select   id="modal-form-judge_code2" name="judge_code2" class="form-control">#}
+{#                                                    {{ macro_codes() }}#}
+{#                                                </select>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-judge_keyword">判断(keyword)：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-add-judge_keyword" name="judge_keyword" class="input-xlarge"  style="width:82%;height:60px"#}
+{#                                                      placeholder="请填写正则表达式，如：(root|bin|nobody)"></textarea>   </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-judge_content">判断内容长度：</label>#}
+{#                                    <div class="row">#}
+{#                                        <div class="col-xs-2 col-sm-2">#}
+{#                                                <div class="clearfix">#}
+{#                                                     <select   id="modal-form-code_mode" name="content_mode" class="form-control" >#}
+{#                                                         <option value="">&nbsp;</option>#}
+{#                                                         <option value="greater_than">大于等于</option>#}
+{#                                                         <option value="less_than">小于等于</option>#}
+{##}
+{#                                                    </select>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        <div class="col-xs-4 col-sm-4">#}
+{#                                            <div class="clearfix">#}
+{#                                                <input type="text" id="modal-form-add-judge_content" name="judge_content"#}
+{#                                                       class="col-xs-12 col-sm-10">#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-content_similar">判断相似度：</label>#}
+{#                                    <div class="row">#}
+{#                                        <div class="col-xs-2 col-sm-2">#}
+{#                                                <div class="clearfix">#}
+{#                                                     <select   id="modal-form-similar_mode" name="similar_mode" class="form-control" >#}
+{#                                                         <option value="">&nbsp;</option>#}
+{#                                                         <option value="greater_than">大于等于</option>#}
+{#                                                         <option value="less_than">小于等于</option>#}
+{##}
+{#                                                    </select>#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        <div class="col-xs-4 col-sm-4">#}
+{#                                            <div class="clearfix">#}
+{#                                                <input type="text" id="modal-form-add-similar" name="similar" placeholder="请填写0-100之间的值"#}
+{#                                                       class="col-xs-12 col-sm-10"> %#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                 <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-describe">描述：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-add-describe" name="describe" class="input-xlarge"  style="width:82%;height:40px"#}
+{#                                                      ></textarea>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                            </div>#}
+{##}
+{#                        </div>#}
+{##}
+{#                    <div class="modal-footer">#}
+{#                        <button class="btn btn-sm btn-primary">#}
+{#                            <i class="ace-icon fa fa-check"></i>#}
+{#                            Submit#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </form>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div id="modal-form-rule" class="modal fade" tabindex="-1">#}
+{#        <div class="modal-dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <button type="button" class="close" onclick="$('#modal-form-rule').modal('hide');">&times;</button>#}
+{#                    <h4 class="blue bigger">请更新规则信息:</h4>#}
+{#                </div>#}
+{#                <form class="form-horizontal">#}
+{#                    <div class="modal-body">#}
+{#                        <div class="row">#}
+{#                            <div class="col-xs-12 col-sm-12">#}
+{#                                <label for="modal-form-ruleId" style="display: none;"></label>#}
+{#                                <input required readonly type="text" id="modal-form-ruleId" name="id" style="display: none;">#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-ruleName">规则名称：</label>#}
+{#                                    <div class="col-xs-12 col-sm-8">#}
+{#                                        <div class="clearfix">#}
+{#                                            <input required type="text" id="modal-form-ruleName" name="rule_name" class="col-xs-12 col-sm-10">#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="space-2"></div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-rule_family">规则类型：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-rule_family" name="rule_family" class="form-control">#}
+{#                                                {{ macro_familys() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-rule_tag">规则TAG：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-rule_tag" name="rule_tag" class="form-control">#}
+{#                                                {{ macro_tags() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="space-2"></div>#}
+{#                                 <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-run_mode">执行方式：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-run_mode" name="run_mode" class="form-control">#}
+{#                                                {{ macro_modes() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-rule_area">注入区域：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-rule_area" name="inj_area" class="form-control">#}
+{#                                                {{ macro_areas() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="space-2"></div>#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-rule_way">注入方式：</label>#}
+{#                                    <div class="col-xs-12 col-sm-7">#}
+{#                                        <div class="clearfix">#}
+{#                                             <select   id="modal-form-rule_way" name="inj_way" class="form-control">#}
+{#                                                {{ macro_ways() }}#}
+{#                                            </select>#}
+{#                                        </div>#}
+{##}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-inj_point">注入点：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-inj_point" name="inj_point" class="input-xlarge"  style="width:82%;height:60px"#}
+{#                                                      placeholder="请填写正则表达式，如：(path|page|download)"></textarea>   </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-inj_value">注入值：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-inj_value" name="inj_value" class="input-xlarge"  style="width:82%;height:60px"#}
+{#                                                      placeholder="多个值请用英文分号分隔，如：../etc/passwd;../../etc/passwd"></textarea>   </div></div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="space-2"></div>#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-judge">判断方法：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-judge" name="judge" class="input-xlarge"  style="width:82%;height:60px"#}
+{#                                                     ></textarea>   </div></div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="space-2"></div>#}
+{##}
+{#                                 <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-describe">描述：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-describe" name="describe" class="input-xlarge"  style="width:82%;height:60px"#}
+{#                                                      ></textarea>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{##}
+{#                            </div>#}
+{##}
+{#                        </div>#}
+{##}
+{#                    <div class="modal-footer">#}
+{#                        <button class="btn btn-sm btn-primary">#}
+{#                            <i class="ace-icon fa fa-check"></i>#}
+{#                            Submit#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </form>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div id="modal-form-add-family" class="modal fade" tabindex="-1">#}
+{#        <div class="modal-dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <button type="button" class="close" onclick="$('#modal-form-add-family').modal('hide');">&times;</button>#}
+{#                    <h4 class="blue bigger">请提交规则分类信息:</h4>#}
+{#                </div>#}
+{#                <form class="form-horizontal">#}
+{#                    <div class="modal-body">#}
+{#                        <div class="row">#}
+{#                            <div class="col-xs-12 col-sm-9">#}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-familyName">名称：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <input required type="text" id="modal-form-add-familyName" name="name" class="col-xs-12 col-sm-10">#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="space-2"></div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-describe">描述：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <textarea id="modal-form-add-describe" name="describe" class="input-xlarge"  style="width:82%;height:60px"#}
+{#                                                      ></textarea>#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                                <div class="space-2"></div>#}
+{##}
+{#                                <div class="form-group">#}
+{#                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-priority">优先级：</label>#}
+{#                                    <div class="col-xs-12 col-sm-9">#}
+{#                                        <div class="clearfix">#}
+{#                                            <input type="text" id="modal-form-add-priority" name="priority" class="col-xs-12 col-sm-10" placeholder="请填写0-100整数">#}
+{#                                        </div>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="modal-footer">#}
+{#                        <button class="btn btn-sm btn-primary">#}
+{#                            <i class="ace-icon fa fa-check"></i>#}
+{#                            Submit#}
+{#                        </button>#}
+{#                    </div>#}
+{#                </form>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+    <div id="modal-form-family" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form-family').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">请更规则信息:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                <label for="modal-form-familyId" style="display: none;"></label>
+                                <input required readonly type="text" id="modal-form-familyId" name="id" style="display: none;">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-familyName">名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-familyName" name="name" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-describe">描述：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <textarea id="modal-form-describe" name="describe" class="input-xlarge"  style="width:82%;height:60px"
+                                                      ></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-priority">优先级：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input type="text" id="modal-form-priority" name="priority" class="col-xs-12 col-sm-10" placeholder="请填写0-100整数">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+<script type="text/javascript">
+function check_http_code(){
+    if($('#modal-form-code_mode option:selected') .val()=="range"){
+        document.getElementById("div_judge_code21").style.display="block";
+        document.getElementById("div_judge_code22").style.display="block";
+        document.getElementById("div_judge_code23").style.display="block";
+    }else {
+        document.getElementById("div_judge_code21").style.display="none";
+        document.getElementById("div_judge_code22").style.display="none";
+        document.getElementById("div_judge_code23").style.display="none";
+    }
+}
+
+function create_rule(form) {
+    var fd = new FormData(form);
+    console.log($("#back-task-if_head").val());
+    if( $('[name="code_mode"]').val() || $('[name="judge_keyword"]').val() || $('[name="content_mode"]').val()){
+        $.ajax({
+        url: "{{ url_for('web.create_rule') }}",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href="{{ url_for('web.rule_list') }}";
+            }
+        });
+    }else {
+        alert('判断条件不能全部为空');
+    }
+
+    return false;
+}
+function put_rule(form) {
+    var fd = new FormData(form);
+    var ruleId = $('#modal-form-ruleId').val();
+    $.ajax({
+        url: "{{ url_for('web.create_rule') }}/"+ruleId,
+        type: "PUT",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.rule_list') }}";
+        }
+    });
+    return false;
+}
+function del_rule(ruleId) {
+
+    if (!window.confirm('是否_删除规则_')) {
+    } else {
+        $.ajax({
+            url: "{{ url_for('web.create_rule') }}/"+ruleId,
+            type: "DELETE",
+            enctype: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+            }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href = "{{ url_for('web.rule_list') }}";
+            }
+        });
+    }
+    return false;
+}
+function ruleOnclick(ruleId) {
+    var tr = $('#rule-'+ruleId);
+    document.getElementById('modal-form-ruleId').value = ruleId;
+    document.getElementById('modal-form-ruleName').value = tr.find('td:eq(0)').text();
+    document.getElementById('modal-form-inj_point').value = tr.find('td:eq(3)').text();
+    document.getElementById('modal-form-inj_value').value = tr.find('td:eq(4)').text();
+    document.getElementById('modal-form-judge').value = tr.find('td:eq(5)').text();
+    document.getElementById('modal-form-describe').value = tr.find('td:eq(9)').text();
+
+    var $opt = $("#modal-form-rule_family option[value='"+tr.find('td:eq(6)').text()+"']");
+    $opt.attr("selected", true);
+    var $opt_tag = $("#modal-form-rule_tag option[value='"+tr.find('td:eq(7)').text()+"']");
+    $opt_tag.attr("selected", true);
+    var $opt_area = $("#modal-form-rule_area option[value='"+tr.find('td:eq(1)').text()+"']");
+    $opt_area.attr("selected", true);
+    var $opt_way = $("#modal-form-rule_way option[value='"+tr.find('td:eq(2)').text()+"']");
+    $opt_way.attr("selected", true);
+    var $opt_mode = $("#modal-form-rule_mode option[value='"+tr.find('td:eq(8)').text()+"']");
+    $opt_mode.attr("selected", true);
+
+
+    $('#modal-form-rule').modal('show');
+    return false;
+}
+
+function create_family(form) {
+    var fd = new FormData(form);
+    $.ajax({
+        url: "{{ url_for('web.create_rule_family') }}",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.rule_list') }}";
+        }
+    });
+    return false;
+}
+function put_family(form) {
+    var fd = new FormData(form);
+    var familyId = $('#modal-form-familyId').val();
+    $.ajax({
+        url: "{{ url_for('web.create_rule_family') }}/"+familyId,
+        type: "PUT",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.rule_list') }}";
+        }
+    });
+    return false;
+}
+function delete_family(familyId) {
+    if (window.confirm('是否_删除_')) {
+        $.ajax({
+            url: "{{ url_for('web.create_rule_family') }}/"+familyId,
+            type: "DELETE",
+            enctype: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+            }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href = "{{ url_for('web.rule_list') }}";
+            }
+        });
+    }
+    return false;
+}
+function familyOnclick(familyId) {
+    var tr = $('#family-'+familyId);
+    document.getElementById('modal-form-familyId').value = familyId;
+    document.getElementById('modal-form-familyName').value = tr.find('td:eq(1)').text();
+    document.getElementById('modal-form-describe').value = tr.find('td:eq(2)').text();
+    document.getElementById('modal-form-priority').value = tr.find('td:eq(3)').text();
+    $('#modal-form-family').modal('show');
+    return false;
+}
+
+
+
+jQuery(function($) {
+    $('#dynamic-table').dataTable({
+{#		"order":[8,'desc'],		#}
+	});
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect:true});
+
+        $(window)
+        .off('resize.chosen')
+        .on('resize.chosen', function() {
+            $('.chosen-select').each(function() {
+                var $this = $(this);
+                $this.next().css({'width': $this.parent().width()});
+            })
+        }).trigger('resize.chosen');
+
+        $('#modal-form').on('show.bs.modal', function() {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function() {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+    {%- for item in ('rule', 'family') -%}
+        $('#modal-form-add-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function(e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function(e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function(error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function(form) {
+                create_{{ item }}(form);
+            },
+            invalidHandler: function(form) {
+            }
+        });
+        $('#modal-form-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function(e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function(e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function(error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function(form) {
+                put_{{ item }}(form);
+            },
+            invalidHandler: function(form) {
+            }
+        });
+    {%- endfor -%}
+})
+</script>
+{% endblock %}

@@ -1,0 +1,552 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0107)http://down_report.yundun.com/view.jsp?scanid=4A50E3A669C04D95857F10E3CB3ADE42&sid=Q6apMQDDLWVEMnPBuknRcnFm -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="/static/css/report.css">
+    <script src="/static/js/jquery-1.10.1.min.js"></script>
+    <script src="/static/js/report.js"></script>
+    <script src="/static/js/echarts.min.js"></script>
+    <script src="/static/js/highstock.js"></script>
+<style type="text/css">
+	.bor_b{border-bottom:1px solid #e4e4e4;}
+	label{font-weight:normal;}
+	.moucur:hover{cursor:pointer;}
+	table{background-color:#FFF;}
+	body, table, td {font-family: SimSun; line-height:1.5em; font-size: 13px; word-break: break-all;}
+	.doa{color:#337ab7}
+	.doa:hover{color:#dd6221}
+	.title_type{background-color: #fff;color: #0052a6;font-size:18px;padding: 10px;border: 1px solid #e2e2e2;border-left: 5px solid #0052a6;}
+	.title_type div{margin:5px;float:left;font-weight:bold}
+	#lou_list{border:1px solid #969696;margin:20px auto;}
+	#lou_list thead tr{background:#f9fafd;}
+	#lou_list tbody tr:hover{background:rgba(150,150,150,.2)}
+	#lou_list tbody tr td{border-bottom:1px solid rgba(150,150,150,.3); padding:10px;}
+	#lou_list a{color:#000; text-decoration:none;}
+	#lou_list a:hover{color:#159fe9; text-decoration:underline;}
+	.xiangqing{border:1px solid #969696;}
+	.xiangqing td{padding:10px;}
+	.xiangqing thead tr{background:#f4f4f4; border-left:5px solid #cccccc;}
+	.xiangqing thead tr td{border-left:5px solid #cccccc;}
+	.fulu_body td{padding:10px;}
+	.fulu_body thead tr{background:#f4f4f4; border-left:5px solid #cccccc;}
+	.fulu_body thead tr td{border-left:5px solid #cccccc;}
+	.text_ttt{width:130px;float:right;padding:0;margin:0 5px}
+	.text_txt{width:100%;height:90px;text-align:center;line-height:50px;background:#efefef;float:right}
+	.mes_top{border:1px solid #969696;}
+	.mes_tittle{width:100%;text-align: left;padding: 10px 30px;font-size: 1.5em;color: #333333;margin:0;font-weight:bold}
+</style>
+</head>
+<body bgcolor="#FFFFFF" text="#000000" style="">
+<a name="PageN1"></a>
+<form id="form1" name="form1">
+		<input type="hidden" id="actions" name="actions" value="download"> <input type="hidden" id="scanid" name="scanid" value="4A50E3A669C04D95857F10E3CB3ADE42"> <input type="hidden" id="type" name="type">
+		<table width="90%" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto" class="page_break">
+			<tbody><tr>
+				<td align="left"><h2>
+						<strong>网站扫描报告</strong>
+					</h2></td>
+				<td width="120" align="center"><a class="doa" id="downloadCnReportLink" href="/report/download/{{ reportid }}">
+				<div style="margin: 0;"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA4ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMDY3IDc5LjE1Nzc0NywgMjAxNS8wMy8zMC0yMzo0MDo0MiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDphMzAzZGJmYi05NTQzLTQ4NjUtYjI5Mi0zMGVmMDc0MTI0ZTYiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6ODEzMzY0OUQzRjRCMTFFNkEwNjU4RDJGOTFDRjUzRkEiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6ODEzMzY0OUMzRjRCMTFFNkEwNjU4RDJGOTFDRjUzRkEiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTUgKE1hY2ludG9zaCkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo3ODY5MDQ4Ny0yMDY0LTRhNzYtYTcyMC1kNWYzMzNmZTg3ODciIHN0UmVmOmRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDpkMmFhOTE3Zi03NTA1LTExNzktODg2Ny1jNTZkMjg3ODY3M2YiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz72pCejAAABBklEQVR42mL8//8/AzUBEwOVAQsxitQWPdsBpESB2OJWnNRvig0EAncoLQDEr6nh5c+0CsP/dI8UJhJd9olsA4ExKw3EbFAuI5TmBYoxA7EMLn2MsIQNVLQBSClBk8Y3ID8WyJ4JxO+BWAJq+TMgFgPiWiDuhJpxFGQOUI8lugv9gVgXiKVBHKCCxUBqNhBLIakDsbcAcS9QHuQSViAGGWSBzctfofQ/mABQUz6QqkNSMxcoFogvcTNhCXiUpAHU3AykpgPxWiA7hSpZD2hQFjnJBhaTH4nVDLToFz4XwrwqCoxhYrMaGz4DeaD0dWrllKVA/Ao5lokEoNJnG0bCHrQlNkCAAQDuykwJUxJ67wAAAABJRU5ErkJggg=="></div>
+				<font size="2">下载中文报告</font>
+				</a></td>
+				</tr>
+		</tbody></table>
+	</form>
+<a name="PageN2"></a>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto" class="page_break">
+    <tbody><tr style="height: 1px">
+        <td width="4">
+        </td><td width="11">
+        </td><td width="8">
+        </td><td width="4">
+        </td><td width="5">
+        </td><td width="7">
+        </td><td width="34">
+        </td><td width="60">
+        </td><td width="19">
+        </td><td width="21">
+        </td><td width="25">
+        </td><td width="11">
+        </td><td width="17">
+        </td><td width="139">
+        </td><td width="22">
+        </td><td width="55">
+        </td><td width="88">
+        </td><td width="113">
+        </td><td width="11">
+        </td><td width="64">
+        </td><td width="2">
+    </td></tr>
+   
+    <tr>
+        <td colspan="21" class="title_type">
+            <div>1.报告摘要</div>
+        </td>
+    </tr>
+    <tr style="height:11px">
+        <td colspan="20"></td>
+        <td>
+    </td></tr>
+    <tr style="height:18px">
+        <td colspan="20" class="s25" style="font-size:12px;font-weight:normal">
+            <div style="margin-left:5px;width:350px;line-height:1.2rem;height:90px;float:left">
+					<span style="font-size:16px">扫描目标：<span style="font-weight:bold">{{ reportData['domain'] }}</span>
+					</span><br> 发起扫描时间：{{ reportData['start_time'] }}<br> 扫描完成时间：{{ reportData['end_time'] }}
+            </div>
+            <div style="width:100%;max-width:850px;height:auto;float:right">
+            <!-- 
+	            <div class="text_ttt">
+		            <div class="text_txt" style="background:#b2d13a">
+		                <div style="color:#fff;font-size:25px">
+		                    3
+		                </div>
+		                <div style="color:#fff;font-size:18px;font-family: SimSun;">信息收集</div>
+		            </div>
+	            </div>
+	             -->
+	            <div class="text_ttt">
+		            <div class="text_txt" style="background:#f7d22e">
+		                <div style="color:#fff;font-size:25px">
+		                    {{ reportData['totalLow'] }}
+		                </div>
+		                <div style="color:#fff;font-size:18px;font-family: SimSun;">低危</div>
+		            </div>
+	            </div>
+	            <div class="text_ttt">
+		            <div class="text_txt" style="background:#f5aa2c">
+		                <div style="color:#fff;font-size:25px">
+		                    {{ reportData['totalMed'] }}
+		                </div>
+		                <div style="color:#fff;font-size:18px;font-family: SimSun;">中危</div>
+		            </div>
+	            </div>
+	            <div class="text_ttt">
+		            <div class="text_txt" style="background:#f74d4e">
+		                <div style="color:#fff;font-size:25px">
+		                    {{ reportData['totalHigh'] }}
+		                </div>
+		                <div style="color:#fff;font-size:18px;font-family: SimSun;">高危</div>
+		            </div>
+	            </div>
+	            <!-- 
+	            <div class="text_ttt">
+		            <div class="text_txt" style="background:#f1367e">
+		                <div style="color:#fff;font-size:25px">
+		                    3
+		                </div>
+		                <div style="color:#fff;font-size:18px;font-family: SimSun;line-height:1em">OWASP<br>Top10</div>
+		            </div>
+	            </div>
+	             -->
+	        		<div class="text_ttt">
+		            <div class="text_txt" style="background:#a9b7b7">
+		                <div style="color:#fff;font-size:25px">
+		                    {{ reportData['total'] }}
+		                </div>
+		                <div style="color:#fff;font-size:18px;font-family: SimSun;">漏洞总数</div>
+		            </div>
+	            </div>
+            </div>
+            </td> 
+        <td>
+    </td></tr>
+    <tr style="height:4px">
+        <td colspan="20"></td>
+        <td>
+    </td></tr>
+    <tr style="height:4px">
+        <td colspan="20" align="center">
+            <div id="lou_bin_top" class="mes_top" style="width:48%;margin:10px 5px 10px 0;float:left">
+	            <div id="lou_bin_tit" class="mes_tittle">漏洞等级分布</div>
+	            <div id="lou_bin" style="width: 100%; height: 400px; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; position: relative; background: transparent;" _echarts_instance_="ec_1476260938494"></div>
+            </div>
+            <div id="top_zhu_top" class="mes_top" style="width:48%;margin:10px 0 10px 5px;float:right">
+	            <div id="top_zhu_tit" class="mes_tittle">OWASP TOP10占比分布</div>
+	            <div id="top_zhu" style="width: 100%; height: 400px; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; position: relative; background: transparent;" _echarts_instance_="ec_1476260938495"></div>
+            </div>
+        </td>
+        <td>
+    </td></tr>
+    <tr style="height:4px">
+        <td colspan="20">
+        <div id="lou_zhu_top" class="mes_top" style="width:100%;margin:10px 0;float:left">
+        		<div id="lou_zhu_tit" class="mes_tittle">漏洞信息分布</div>
+            <div id="lou_zhu" style="width: 1700px; height: 400px;" data-highcharts-chart="0"></div>
+        </td>
+        <td>
+    </td></tr>
+</tbody></table>
+<table id="lou_list" width="90%" border="0" cellspacing="0" cellpadding="0" class="page_break">
+       <thead>
+	<tr>
+		<td colspan="3" align="center" style="padding:10px">漏洞列表</td>
+	</tr>     
+	</thead>
+	<tbody>  
+	<tr>
+		<td>漏洞名称</td>
+		<td>数量</td>
+		<!-- <td>漏洞等级</td> -->
+	</tr>
+
+	{% for familyid in reportData['statsFamily'] %}
+	<tr>
+		<td><a id="tlou1"></a>{{ familyid }}. {{ reportData['statsFamily'][familyid]['family'] }}</td>
+		<td>{{ reportData['statsFamily'][familyid]['total'] }}</td>
+	<!-- 
+		<td style="color:#ff9933;font-weight:bold"><div style="float:left;margin:0 10px 0 0"><div style="width:10px;height:10px;background-color:#ff9933;float:left;margin:5px 1px"></div>
+				<div style="width:10px;height:10px;background-color:#ff9933;float:left;margin:5px 1px"></div>
+				<div style="width:10px;height:10px;background-color:#ff9933;float:left;margin:5px 1px"></div>
+  		<div style="width:10px;height:10px;background-color:#b2b2b2;float:left;margin:5px 1px"></div></div>中危</td>
+  	-->
+	</tr>
+	{% endfor %}
+	</tr>
+	
+	 </tbody>
+</table>
+<a name="PageN"></a><a name="PageN"></a><a name="PageN"></a><a name="PageN"></a><a name="PageN"></a><a name="PageN"></a>
+<table width="90%" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto" class="page_break">
+	<tbody>
+	<tr>
+		<td colspan="20" class="title_type">
+			<div>2.漏洞详情</div>
+		</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td colspan="20" style="padding-left:10px"><h3 style="color:#000;margin:5px">2.1 确认漏洞（7）</h3></td>
+		<td></td>
+	</tr>
+	{% set i = 0 %}
+	{% for level in reportData['results'] %}
+	{% if not reportData['results'][level] %} {% endif %}
+	<tr id="high" class="moucur">
+		<td colspan="20" style="padding:10px;padding-left:20px;font-weight:bold;color:#ff9933">
+			<a id="med_med"></a>
+			2.1.{{i}} {% if level == "HIGH" %}高危({{reportData['totalHigh']}}){% elif level == "MED" %}中危({{reportData['totalMed']}}){% elif level == "LOW" %}低危({{reportData['totalLow']}}){% else %}{% endif %}
+		</td>
+		<td></td>
+	</tr>
+	<tr style="height:10px">
+		<td colspan="20"></td>
+		<td></td>
+	</tr>
+	
+	{% for vulid in reportData['results'][level] %}
+	<tr name="high" id="med1" style="height:22px" class="moucur">		
+		<td colspan="20" style="padding:10px;padding-left:30px;font-weight:bold">
+			<a id="j_zhong1"></a>
+			{{ vulid }}. {{ reportData['results'][level][vulid]['vul']['vul_name'] }}({# len(reportData['results'][level][vulid]['list']) #})
+		</td>
+		<td></td>
+	</tr>
+	<tr name="high" class="med1 info" style="height:4px">
+		<td colspan="20">
+			<table width="100%" class="xiangqing" border="0" cellspacing="0" cellpadding="0">
+				<tbody>
+					<tr name="high" style="height:1px">
+						<td colspan="20" style="font-size:1px">&nbsp;</td>
+						<td></td>
+					</tr>
+					<tr name="high" style="height:18px">
+						<td colspan="20">
+							<div style="width: 10%;text-align:right;float: left;">严重程度:</div>
+							<div style="width:80%;margin-left: 20px;float: left;">{% if level == "HIGH" %}高危{% elif level == "Med" %}中危{% elif level == "LOW" %}低危{% endif %}</div>
+						</td> 
+						<td></td>
+					</tr>
+					<tr name="high" style="height:18px">
+						<td colspan="20"><div style="width: 10%;text-align:right;float: left;">类型:</div>
+	 						<div style="width:80%;margin-left: 20px;float: left;">{{ reportData['results'][level][vulid]['vul']['family'] }}</div>
+	 					</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="20">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<thead>
+									<tr name="high" style="height:18px">
+										<td colspan="21" style="padding:10px 5px">漏洞描述</td>
+									</tr>
+								</thead>
+							  	<tbody>
+									<tr name="high" style="height:47px">
+										<td colspan="20" style="padding:0 5px;" class="s44">
+											<div style="width:90%;margin:0 5px">
+												<label style="width:80%">{{ reportData['results'][level][vulid]['vul']['desc'] }}</label>
+											</div>
+										</td>
+									  	<td></td>
+								  	</tr>
+							  	</tbody>
+							</table>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="20">
+						<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<thead>
+									<tr name="high" style="height:18px">
+										<td colspan="21" style="padding:10px 5px">解决方案</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr name="high" style="height:18px">
+										<td colspan="20" style="padding:0 5px;" class="s44">
+											<div style="width:90%;margin:0 5px">
+												<label style="width:80%" wrap="virtual">{{ reportData['results'][level][vulid]['vul']['solu'] }}
+												</label>
+											</div>
+										</td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+						<td></td>
+					</tr>
+					<tr>
+						<td colspan="20">
+							<table width="100%" border="0" cellspacing="0" cellpadding="0">
+								<thead>
+									<tr name="high" style="height:18px">
+										<td colspan="21" style="padding:10px 5px">参考</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr name="high" style="height:18px">
+										<td colspan="20" style="padding:0 5px;" class="s44">
+											<div style="width:90%;margin:0 5px">
+												<label style="width:80%" wrap="virtual">无</label>
+											</div>
+										</td>
+										<td></td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
+		</td>
+		<td></td>
+	</tr>
+	{% endfor %}
+	{% endfor %}
+	</tbody>
+</table>
+
+<table width="90%" border="0" cellspacing="0" cellpadding="0" style="margin:0 auto" class="page_break">
+    <tbody><tr>
+        <td class="title_type">
+            <div>附录</div>
+        </td>
+        <td>
+    </td></tr>
+	<tr>
+        <td style="padding:10px;padding-left:20px;">
+           	 漏洞定义
+        </td>
+    </tr>
+    <tr><td style="paddaing:10px;padding-left:20px">
+    	<table class="fulu_body" width="100%" border="0" cellspacing="0" cellpadding="0">
+                <thead>
+                <tr style="height:18px">
+                    <td style="padding:10px">
+                        	确认漏洞：
+                    </td>
+                </tr>
+                </thead>
+                <tbody><tr style="height:47px">
+                    <td style="padding:15px 10px;line-height:2em">
+                       <div style="text-indent:2em"> 漏洞(QIDs)是设计缺陷,编程错误,或mis-configurations使您的web应用程序和web应用程序平台容易受到恶意攻击。 
+				                       根据安全风险的水平,成功开发一个漏洞可以从信息披露完整的web应用程序和/或妥协的web应用程序平台。
+				                        即使web应用程序没有完全妥协,漏洞被利用的也可能导致所使用的web应用程序对用户的网站发动攻击。</div>
+				      	<span style="color:#f32f34;font-weight:bold"> 高危</span>：漏洞在这个级别通常披露与安全相关的信息,这可能导致误用或利用。 例子包括源代码披露或传播身份验证凭证没有加密的通道。<br>
+					<span style="color:#ff9933;font-weight:bold">中危</span>：入侵者可以收集敏感信息应用平台,如准确版本的软件使用。 根据这些信息,入侵者可以很容易地利用已知的漏洞特定软件版本。 其他类型的敏感信息可能会披露几行源代码或隐藏目录。<br>
+					<span style="color:#1366ff;font-weight:bold">低危</span>：基本信息披露(如web服务器类型,编程语言)可能会使入侵者发现其他漏洞,但缺乏这些信息并不使漏洞难找到。<br>
+					<span style="color:#009847;font-weight:bold">信息</span>：信息收集的问题(QIDs)包括可见的web应用程序的平台,信息代码,或者架构。 它也可以包括web应用程序的用户信息。
+					
+                    </td>
+                </tr>
+                </tbody></table>
+    </td></tr>
+</tbody></table>
+<script type="text/javascript">
+$("tr").click(function(){
+	var a = $(this).attr("id");	
+	
+	var thisTr=$(this).next("tr");
+	if(thisTr.hasClass(a)){
+	if(thisTr.hasClass("info")){
+			thisTr.removeClass("info");
+		}else{
+			thisTr.addClass("info");
+		}
+		}else{}
+});
+$(window).resize(function(){
+	$('#lou_zhu').css('width',$('#lou_list').width()-10);
+});
+var lou_bin = echarts.init(document.getElementById('lou_bin'));
+
+// 指定图表的配置项和数据
+lou_bin_body = {
+    tooltip: {
+        trigger: 'item',
+        formatter: "{a} <br/>{b}: {c} ({d}%)"
+    },
+    legend: {
+        orient: 'vertical',
+        x: 'left',
+        data:['高危','中危','低危']
+    },
+    series: [
+        {
+            name:'漏洞',
+            type:'pie',
+            radius: ['50%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+                normal: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    show: true,
+                    textStyle: {
+                        fontSize: '30',
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+            labelLine: {
+                normal: {
+                    show: false
+                }
+            },
+            data:[
+                {value:{{ reportData['totalHigh'] }}, name:'高危',itemStyle:{
+                  normal:{color:'#f74d4e'}
+				}},
+                {value:{{ reportData['totalMed'] }}, name:'中危',itemStyle:{
+                  normal:{color:'#f5aa2c'}
+				}},
+                {value:{{ reportData['totalLow'] }}, name:'低危',itemStyle:{
+                  normal:{color:'#f7d22e'}
+				}},
+            ]
+        }
+    ]
+};
+// 使用刚指定的配置项和数据显示图表。
+window.onresize = lou_bin.resize;
+lou_bin.setOption(lou_bin_body);
+
+		
+		var top_zhu = echarts.init(document.getElementById('top_zhu'));
+		top_zhu_body = {
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow'
+        }
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: {
+        type: 'value',
+        boundaryGap: [0, 0.05]
+    },
+    yAxis: {
+        type: 'category',
+        data: [
+	        	'10.未验证的重定向和转发',
+	        	'9.使用含有已知漏洞的组件',
+	        	'8.跨站请求伪造(CSRF)',
+	        	'7.功能级访问控制缺失',
+	        	'6.敏感信息泄露',
+	        	'5.安全配置错误',
+	        	'4.不安全的直接引用对象',
+	        	'3.跨站脚本(XSS)',
+	        	'2.失效的身份认证和会话管理',
+	        	'1.SQL注入'
+        	]
+    },
+    series: [
+        {
+            type: 'bar',
+            data: ['0','0','3','0','0','0','0','0','0','0',],barWidth : 30,
+        },
+    ]
+};
+		window.onresize = top_zhu.resize;
+		top_zhu.setOption(top_zhu_body);
+		
+		
+	$('#lou_zhu').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: null
+        },
+        subtitle: {
+            text: null
+        },
+        xAxis: {
+            categories: [{% for familyid in reportData['statsFamily'] %}'{{ familyid }}',{% endfor %}]
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: null
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.0f} 个</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0,
+                pointWidth: 30,
+                 dataLabels:{
+                            enabled:true,
+                        },
+                cursor: 'pointer',
+				point: {
+				events: {
+				click: function() {
+					location.href = "#tlou"+event.point.category;
+				}
+				}
+				},
+            }
+        },
+        series: [{
+            name: '漏洞数',
+            color:'#32cbcd',
+            data: [{% for familyid in reportData['statsFamily'] %}{{ reportData['statsFamily'][familyid]['total'] }},{% endfor %}]
+
+        }]
+    });	
+
+	</script>
+	
+
+
+</body></html>

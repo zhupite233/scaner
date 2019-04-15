@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>扫描报表</title>
+    <!--
+        作者：qijia
+        时间：2016-12-7
+        描述：404 page
+    -->
+    <style type="text/css">
+    /*css reset start*/    
+    html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, 
+    big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, 
+    dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, 
+    canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, 
+    mark, audio, video {margin: 0; padding: 0; border: 0; font-size: 100%; font: inherit; vertical-align: baseline; }
+    
+    article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section { display: block;}
+    body { line-height: 1;}
+    ol,ul { list-style: none;}
+    blockquote,q { quotes: none;}
+    blockquote:before,blockquote:after,q:before,q:after { content: ''; content: none;}
+    table { border-collapse: collapse; border-spacing: 0;}
+    /*css reset end*/
+    html,body { width: 100%; height: 100%; text-align: center; overflow: hidden;}
+    html { font: 100%/1.6 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', STHeitiSC-Light, 'Microsoft YaHei', 微软雅黑, Arial, sans-serif;}
+    img { max-width: 100%; height: 100%;}
+    .container { width: 100%; height: 100%; position: relative;}
+    .main { width: 100%; height: 100%;}
+    .err-tips-cn { margin-top: 309px;}
+    .err_code { font-size: 136px; font-style: italic; font-weight: 300; color: #00A2Ca;}
+    .tpis_cn { margin-left: 20px; font-size: 40px; color: #333;}
+    .err-tips-en { margin-top: 22px; font-size: 55px; color: #666;}
+    .img-line { margin-top: 10px;}
+    .host-info { margin-top: 10px; color: #666; font-size: 18px; font-weight: 200;}
+    .host-info-mar { margin-left: 20px;}
+    /*Responsiveness*/
+    @media screen and (min-width: 992px) and (max-width: 1366px) { .err-tips-cn {     margin-top: 200px; }
+     .err_code {     font-size: 120px; }
+     .tpis_cn {     font-size: 40px; }
+     .err-tips-en {     font-size: 35px; }
+    }
+    @media screen and (min-width: 769px) and (max-width: 991px) { .err-tips-cn {     margin-top: 200px; }
+     .err_code {     font-size: 120px; }
+     .tpis_cn {     font-size: 40px; }
+     .err-tips-en {     font-size: 35px; }
+     .host-info {     font-size: 20px; }
+    }
+    @media screen and (min-width: 520px) and (max-width: 768px) { .err-tips-cn {     margin-top: 350px; }
+     .err_code {     font-size: 100px; }
+     .tpis_cn {     font-size: 40px; }
+     .err-tips-en {     font-size: 35px; }
+     .host-info {     font-size: 20px; }
+    }
+    @media screen and (min-width: 360px) and (max-width: 519px) { .err-tips-cn {     margin-top: 250px; }
+     .err_code {     font-size: 60px; }
+     .tpis_cn {     font-size: 30px; }
+     .err-tips-en {     font-size: 25px; }
+     .host-info {     font-size: 15px; }
+    }
+    @media screen and (max-width: 359px) { .err-tips-cn {     margin-top: 200px; }
+     .err_code {     font-size: 50px; }
+     .tpis_cn {     font-size: 25px; }
+     .err-tips-en {     font-size: 20px; }
+     .host-info {     font-size: 10px; }
+    }
+    /*ie9以下版本模拟媒体查询*/.w992 .err-tips-cn { margin-top: 200px;}
+    .w992 .err_code { font-size: 120px;}
+    .w992 .tpis_cn { font-size: 40px;}
+    .w992 .err-tips-en { font-size: 35px;}
+    .w769 .err-tips-cn { margin-top: 200px;}
+    .w769 .err_code { font-size: 120px;}
+    .w769 .tpis_cn { font-size: 40px;}
+    .w769 .err-tips-en { font-size: 35px;}
+    .w769 .host-info { font-size: 20px;}
+    .w521 .err-tips-cn { margin-top: 350px;}
+    .w521 .err_code { font-size: 100px;}
+    .w521 .tpis_cn { font-size: 40px;}
+    .w521 .err-tips-en { font-size: 35px;}
+    .w521 .host-info { font-size: 20px;}
+    .w321 .err-tips-cn { margin-top: 250px;}
+    .w321 .err_code { font-size: 60px;}
+    .w321 .tpis_cn { font-size: 30px;}
+    .w321 .err-tips-en { font-size: 25px;}
+    .w321 .host-info { font-size: 15px;}
+    .lt-w320 .err-tips-cn { margin-top: 200px;}
+    .lt-w320 .err_code { font-size: 50px;}
+    .lt-w320 .tpis_cn { font-size: 25px;}
+    .lt-w320 .err-tips-en { font-size: 20px;}
+    .lt-w320 .host-info { font-size: 10px;}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main">
+            <div class="err-tips-cn">
+                <span class="err_code">404</span><span class="tpis_cn">报告不存在！</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

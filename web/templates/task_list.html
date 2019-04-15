@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}任务管理{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class=""><a href="{{ url_for('web.add_task_html') }}">添加任务</a></li>
+            <li class="active"><a href="#tasklist">任务列表</a></li>
+        </ul>
+        <div class="tab-content padding-24">
+            <div id="task-form" class="tab-pane fade in active">
+                <div class="row"><div class="col-xs-12">
+                	  <table class="table table-striped table-bordered table-hover">
+                	     <thead>
+                	     <tr>
+                          <th>ID</th>
+                          <th>名称</th>
+                          <th>域名</th>
+                          <th>状态</th>
+                          <th>开始扫描时间</th>
+                          <th>结束扫描时间</th>
+                          <th>操作</th>
+                	     </tr>
+                	     </thead>
+                	     <tbody>
+                	     {% for task in tasks %}
+	                	    <tr>
+		                        <td><a href="/task/info/{{ task.id }}">{{ task.id }}</a></td>
+		                        <td>{{ task.name }}</td>
+		                        <td>{{ task.target }}</td>
+		                        <td>{{ task.explainState() }}</td>
+		                        <td>{{ task.formatStartTime() }}</td>
+		                        <td>{{ task.formatEndTime() }}</td>
+		                        <td>
+		                        {% if task.state in [0, 3] %}
+		                        	<a href="/task/start/{{ task.id }}" target="_blank">启动</a>
+		                        {% else %}
+		                        	<a href="/task/stop/{{ task.id }}" target="_blank">终止</a>
+		                        {% endif %}
+		                        	<a href="/task/form/{{ task.id }}">编辑</a>
+		                        	<a href="/report/detail/{{ task.id }}">报告</a>
+		                        </td>
+		                    </tr>
+		                    {% endfor %}
+                	     </tbody>
+                    </table>
+                </div></div>
+            </div>
+{% endblock %}

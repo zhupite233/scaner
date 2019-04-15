@@ -1,0 +1,308 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}"/>
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}扫描任务{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class="active"><a data-toggle="tab" href="#adminUser">任务列表</a></li>
+
+        </ul>
+        <div class="tab-content padding-24">
+            {% macro macro_roles() %}
+
+                {% for role in roles %}
+                    <option value="{{ role.cname }}">{{ role.cname }}</option>
+                {% endfor %}
+            {% endmacro %}
+            <div id="tab-task_list" class="tab-pane fade in active">
+                <div class="row">
+                    <div class="col-xs-12">
+                        {#                    {%- if 'create_task' in session.get('selectors', ()) -%}#}
+                        <a class="btn btn-xs btn-info" href=" {{ url_for('web.add_task_html') }}">
+                            <i class="ace-icon fa fa-plus bigger-120"></i>新增扫描任务
+                        </a>
+                        {#                    {%- endif -%}#}
+                        <table id="dynamic-table" class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+{#                                <th style="display: none">JOB_ID</th>#}
+                                <th>TASK_ID</th>
+                                <th>名称</th>
+                                <th>域名</th>
+                                <th>扫描开始时间</th>
+                                <th>状态</th>
+                                <th>扫描进度</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {%- for task in task_jobs -%}
+
+{#                                <tr id="job-{{ task_job.ApJobsTaskRef.id }}">#}
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.name }}</td>
+                                    <td>{{ task.target | get_task_domain}}</td>
+                                    <td>{{ task.start_time }}</td>
+                                    <td>{{ task.state | get_job_task_status }}</td>
+                                    <td>
+
+                                            <span><div  id="progress-{{ task.id }}"></div></span>
+                                            <span><div id="percent-progress-{{ task.id }}"></div></span>
+
+                                    </td>
+                                    <td>
+                                        <div class="hidden-sm hidden-xs btn-group">
+                                            {#    {%- if 'adminCreateUser' in session.get('selectors', ()) -%} #}
+                                            {#                                            <button class="btn btn-sm btn-info" {% if task_job.ApJobsTaskRef.job_status != 2 %}disabled {% endif %}#}
+                                            {#                                                    onclick="schedule_job('{{ task_job.ApJobsTaskRef.job_id }}','pause')">#}
+                                            {#                                                <i class="ace-icon fa fa-pause bigger-120"></i>暂停#}
+                                            {#                                            </button>#}
+                                            {#    {%- endif %}
+                                        {%- if 'adminDeleteUser' in session.get('selectors', ()) -%}  #}
+                                            {#                                            <button class="btn btn-sm btn-warning" {% if task_job.ApJobsTaskRef.job_status != 4 %}disabled {% endif %}#}
+                                            {#                                                    onclick="schedule_job('{{ task_job.ApJobsTaskRef.job_id }}','resume')">#}
+                                            {#                                                <i class="ace-icon fa fa-refresh bigger-120"></i>恢复#}
+                                            {#                                            </button>#}
+                                            {% if task.state == 1 %}
+                                                <a class="btn btn-sm btn-info"
+                                                   href="{{ url_for('web.add_task_html') }}/{{ task.id }}">
+                                                    <i class="ace-icon fa fa-trash-o bigger-120"></i>编辑
+                                                </a>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-danger"
+                                                    {% if task.state != 1 %}disabled {% endif %}
+                                                    onclick="del_task_job('{{ task.id }}')">
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>删除
+                                            </button>
+                                            {#    {%- endif -%} #}
+                                            {% if task.state == 2 %}
+                                             <a class="btn btn-sm btn-info"
+                                                   href="{{ url_for('web.task_process_html') }}/{{ task.id }}">
+                                                    <i class="ace-icon fa fa-trash-o bigger-120"></i>详细进展
+                                                </a>
+                                             {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {%- endfor -%}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block page_js %}
+    <script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='ace/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='ace/js/jquery.dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nanobar.min.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+    <script type="text/javascript">
+{#        function schedule_job(job_id, oper) {#}
+{##}
+{#            $.ajax({#}
+{#                url: "{{ url_for('web.scheduler_job') }}",#}
+{#                type: "POST",#}
+{#                data: {job_id: job_id, operation: oper},#}
+{#                enctype: "multipart/form-data",#}
+{#                statusCode: {#}
+{#                    403: function () {#}
+{#                        alert("权限不足, 请联系管理员");#}
+{#                    }#}
+{#                }#}
+{##}
+{##}
+{#            }).done(function (result) {#}
+{#                alert(result.desc);#}
+{#                if (result.status) {#}
+{#                    window.location.href = "{{ url_for('web.tasks_list') }}";#}
+{#                }#}
+{#            });#}
+{#            return false;#}
+{#        }#}
+
+        function del_task_job(job_id) {
+            alert(job_id);
+            if (!window.confirm('是否_删除任务_')) {
+            } else {
+                $.ajax({
+                    url: "{{ url_for('web.add_task') }}/" + job_id,
+                    type: "DELETE",
+                    enctype: "multipart/form-data",
+                    processData: false,
+                    contentType: false,
+                    statusCode: {
+                        403: function () {
+                            alert("权限不足, 请联系管理员");
+                        }
+                    }
+                }).done(function (result) {
+                    alert(result.desc);
+                    if (result.status) {
+                        window.location.href = "{{ url_for('web.tasks_list') }}";
+                    }
+                });
+            }
+            return false;
+        }
+
+
+
+            jQuery(function ($) {
+{#                $('#dynamic-table').dataTable({#}
+            {#		"order":[8,'desc'],		#}
+{#                });#}
+                if (!ace.vars['touch']) {
+                    $('.chosen-select').chosen({allow_single_deselect: true});
+
+                    $(window)
+                            .off('resize.chosen')
+                            .on('resize.chosen', function () {
+                                $('.chosen-select').each(function () {
+                                    var $this = $(this);
+                                    $this.next().css({'width': $this.parent().width()});
+                                })
+                            }).trigger('resize.chosen');
+
+                    $('#modal-form').on('show.bs.modal', function () {
+                        if (!ace.vars['touch']) {
+                            $(this).find('.chosen-container').each(function () {
+                                $(this).find('a:first-child').css('width', '210px');
+                                $(this).find('.chosen-drop').css('width', '210px');
+                                $(this).find('.chosen-search input').css('width', '210px');
+                            });
+                        }
+                    });
+                }
+
+                {%- for item in ('user', 'group', 'selector') -%}
+                    $('#modal-form-add-{{ item }} form.form-horizontal').validate({
+                        errorElement: 'div',
+                        errorClass: 'help-block',
+                        focusInvalid: false,
+                        ignore: '',
+                        highlight: function (e) {
+                            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                        },
+                        success: function (e) {
+                            $(e).closest('.form-group').removeClass('has-error');
+                            $(e).remove();
+                        },
+                        errorPlacement: function (error, element) {
+                            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                                var controls = element.closest('div[class*="col-"]');
+                                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                            } else if (element.is('.select2')) {
+                                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                            } else if (element.is('.chosen-select')) {
+                                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                            } else {
+                                error.insertAfter(element.parent());
+                            }
+                        },
+                        submitHandler: function (form) {
+                            create_{{ item }}(form);
+                        },
+                        invalidHandler: function (form) {
+                        }
+                    });
+                    $('#modal-form-{{ item }} form.form-horizontal').validate({
+                        errorElement: 'div',
+                        errorClass: 'help-block',
+                        focusInvalid: false,
+                        ignore: '',
+                        highlight: function (e) {
+                            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+                        },
+                        success: function (e) {
+                            $(e).closest('.form-group').removeClass('has-error');
+                            $(e).remove();
+                        },
+                        errorPlacement: function (error, element) {
+                            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                                var controls = element.closest('div[class*="col-"]');
+                                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                            } else if (element.is('.select2')) {
+                                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                            } else if (element.is('.chosen-select')) {
+                                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                            } else {
+                                error.insertAfter(element.parent());
+                            }
+                        },
+                        submitHandler: function (form) {
+                            put_{{ item }}(form);
+                        },
+                        invalidHandler: function (form) {
+                        }
+                    });
+                {%- endfor -%}
+            })
+    </script>
+    <script>
+        //move bar
+        // size bar 30%
+
+        // Finish progress bar
+        //nanobar.go(100);
+        var flash_state = 0;
+        var task_id_list = '';
+        var nanobar_list =[];
+        {%- for task in task_jobs -%}
+            task_id_list+=','+{{ task.id }};
+            var task_state = {{ task.state }};
+            //alert(task_state);
+            if (task_state!=1){
+                flash_state=1;
+            }
+            var nanobar{{ task.id }} = new Nanobar({
+                bg: '#acf',
+                target: document.getElementById('progress-' + {{ task.id }}),
+                id: {{ task.id }}
+            });
+            nanobar_list.push(nanobar{{ task.id }});
+        {% endfor %}
+        function test() {
+            function showProgress() {
+                var progress = 0;
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url_for('web.job_progress') }}/" + task_id_list.substring(1,1000),
+                    dataType: "json",
+                    success: function (result) {
+                        for(var i= 0;i<nanobar_list.length;i++){
+
+                            var task_id =nanobar_list[i]['opts']['id'];
+                            $(nanobar_list[i]['opts']['target'].childNodes[1]).text(result[task_id]['current'] + '%');
+                            nanobar_list[i].go(result[task_id]['current']);
+                            $('#percent-progress-' + task_id).text(result[task_id]['current'] + '%');
+                        }
+                    }
+                });
+            }
+            setInterval(showProgress, 15000);
+        }
+       // alert(flash_state);
+        if (flash_state==1){
+            test();
+        }
+
+    </script>
+{% endblock %}

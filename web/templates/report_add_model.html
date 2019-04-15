@@ -1,0 +1,200 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/bootstrap-duallistbox.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}
+<a href="{{ url_for('web.index') }}">Home</a>
+{% endblock %}
+{% block current_node %}Web扫描报告模板{% endblock %}
+
+{% block content %}
+<div class="tabbable">
+    <ul class="nav nav-tabs tab-size-bigger" id="plan-tab">
+        <li class="active"  class=""  >
+            <a data-toggle="tab" href="#back-plan">
+                Web扫描报告模板
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content no-border padding-24">
+
+        <div id="back-plan" class="tab-pane fade in active"  class="tab-pane fade" >
+            <form class="form-horizontal" id="back-plan-form" role="form" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-model_name">模板名称：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <input required type="text" id="modal-form-add-model_name" placeholder="云盾默认模板" name="model_name" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-model_title">标题：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <input required type="text" id="modal-form-add-model_title" placeholder="盾眼弱点扫描报告" name="title" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-model_company">单位名称：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <input required type="text" id="modal-form-add-model_company" placeholder="上海云盾信息技术有限公司" name="company" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-model_footer">页脚：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <input required type="text" placeholder="本报告由上海云盾信息技术有限公司生成，如果您对报告有任何疑问，可联系：021-60310101" id="modal-form-add-model_footer" name="footer" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-model_footer">Logo文件：(文件名仅支持jpg或png格式, 且不允许超过2M)</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <input type="file" id="modal-form-add-model_logo" name="logo_file" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+
+
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right"></label>
+                <div class="col-xs-12 col-sm-9">
+                    <button class="btn btn-success btn-next" id="back-submit-button">
+                        提交
+                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                    </button>
+                    <button class="btn btn-success btn-next" style="display: none;" id="back-hide-button" onclick="return false;">
+                        创建中...
+                    </button>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.bootstrap-duallistbox.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/WdatePicker.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+<script type="text/javascript">
+jQuery(function($) {
+
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect:true});
+
+        $(window)
+        .off('resize.chosen')
+        .on('resize.chosen', function() {
+            $('.chosen-select').each(function() {
+                var $this = $(this);
+                $this.next().css({'width': $this.parent().width()});
+            })
+        }).trigger('resize.chosen');
+
+        $(document)
+        .on('settings.ace.chosen', function(e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function() {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                });
+        });
+
+        $('#modal-form').on('show.bs.modal', function() {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function() {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+	$('#back-plan-form').validate({
+        errorElement: 'div',
+        errorClass: 'help-block',
+        focusInvalid: false,
+        ignore: '',
+        highlight: function(e) {
+            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+        },
+        success: function(e) {
+            $(e).closest('.form-group').removeClass('has-error');
+            $(e).remove();
+        },
+        errorPlacement: function(error, element) {
+            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                var controls = element.closest('div[clss*="col-"]');
+                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+            } else if (element.is('.select2')) {
+                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+            } else if (element.is('.chosen-select')) {
+                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+            } else {
+                error.insertAfter(element.parent());
+            }
+        },
+        submitHandler: function(form) {
+            $('#back-submit-button').hide();
+            $('#back-hide-button').show();
+            do_submit(form);
+            $('#back-submit-button').show();
+            $('#back-hide-button').hide();
+        },
+        invalidHandler: function(form) {
+        }
+    });
+
+
+
+});
+
+
+function do_submit(form) {
+    var fd = new FormData(form);
+    console.log(fd);
+    $.ajax({
+    url: "{{ url_for('web.report_model_create') }}",
+    type: "POST",
+    data: fd,
+    enctype: "multipart/form-data",
+    processData: false,
+    contentType: false,
+    statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+    }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href = "{{ url_for('web.report_model_list') }}";
+        }
+    });
+    return false;
+}
+
+</script>
+{% endblock %}

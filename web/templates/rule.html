@@ -1,0 +1,492 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}用户管理{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class="active"><a data-toggle="tab" href="#adminRule">扫描规则</a></li>
+{#            <li class=""><a data-toggle="tab" href="#adminFamily">规则分类</a></li>#}
+
+        </ul>
+        <div class="tab-content padding-24">
+            {% macro macro_familys() %}
+
+                {% for family in rule_family %}
+                    <option value="{{ family.id }}">{{ family.name }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_ways() %}
+
+                {% for way in ways %}
+                    <option value="{{ way.rule_way }}">{{ way.rule_way }}-{{ way.describe }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_areas() %}
+                {% for area in areas %}
+                    <option value="{{ area.rule_area }}">{{ area.rule_area }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_codes() %}
+                <option value>&nbsp;</option>
+                {% for code in http_codes %}
+                    <option value="{{ code.http_code }}">{{ code.http_code }}-{{ code.code_info }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_tags() %}
+                <option value>&nbsp;</option>
+                {% for tag in tags %}
+                    <option value="{{ tag.rule_tag }}">{{ tag.rule_tag }}</option>
+                {% endfor %}
+            {% endmacro %}
+            {% macro macro_modes() %}
+                <option value>&nbsp;</option>
+                {% for mode in modes %}
+                    <option value="{{ mode.run_mode }}">{{ mode.run_mode }}</option>
+                {% endfor %}
+            {% endmacro %}
+
+            <div id="adminRule" class="tab-pane fade in active">
+                <div class="row"><div class="col-xs-12">
+                  {#  {%- if 'adminCreateUser' in session.get('selectors', ()) -%}  #}
+                    <div class="row"><div class="col-xs-6">
+                        <a class="btn btn-xs btn-info" href=" {{ url_for('web.rule_add_html') }}">
+                            <i class="ace-icon fa fa-plus bigger-120"></i>添加规则
+                        </a>
+                        </div><div class="col-xs-6">
+                        <form class="form-inline" role="form" action="{{ url_for('web.rule_list') }}" method="get">
+
+								<tr>
+									<td>
+										<input type="text"  name="search_msg"  >
+									</td>
+
+									<td >
+										<button class="btn btn-info" type="submit">
+											<i class="ace-icon fa fa-check bigger-70"></i>
+											搜索
+										</button>
+									</td>
+								</tr>
+						</form></div>
+                    </div>
+                   {# {%- endif -%}  #}
+                    <table id="dynamic-table" class="table table-striped ">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>名称</th>
+                            <th>注入区域</th>
+                            <th>注入方式</th>
+                            <th>注入点</th>
+                            <th>注入值</th>
+{#                            <th >判断方法</th>#}
+                             <th >规则类型</th>
+{#                            <th >规则TAG</th>#}
+                            <th>执行模式</th>
+{#                            <th>描述</th>#}
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%- for rule in rules -%}
+                            <tr id="rule-{{ rule.rule_id }}">
+                                <td>{{ rule.rule_id }}</td>
+                                <td>{{ rule.rule_name }}</td>
+                                <td>{{ rule.area }}</td>
+                                <td>{{ rule.inj_way }}</td>
+                                <td>{{ rule.inj_point }}</td>
+                                <td>{{ rule.inj_value }}</td>
+{#                                <td>{{ rule.judge }}</td>#}
+                                <td >{{ rule.rule_family | get_family_name_by_id }}</td>
+{#                                <td>{{ rule.rule_tag }}</td>#}
+                                <td>{{ rule.run_mode }}</td>
+{#                                <td>{{ rule.describe }}</td>#}
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+                                      {#    {%- if 'adminCreateUser' in session.get('selectors', ()) -%} #}
+                                            <a class="btn btn-xs btn-info" href="{{ url_for('web.rule_list') }}/{{ rule.rule_id }}">
+                                                详情编辑
+                                            </a>
+                                    {#    {%- endif %}
+                                        {%- if 'adminDeleteUser' in session.get('selectors', ()) -%}  #}
+                                            <button class="btn btn-xs btn-danger" onclick="del_rule('{{ rule.rule_id }}');">
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </button>
+                                    {#    {%- endif -%} #}
+                                    </div>
+                                </td>
+                            </tr>
+                        {%- endfor -%}
+                        </tbody>
+                    </table>
+                    <div>
+
+                        <div>{{ pagination.info }}</div>
+
+                        <div>{{ pagination.links }}</div>
+
+                    </div>
+                </div></div>
+            </div>
+
+    <div id="modal-form-family" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form-family').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">请更规则信息:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                <label for="modal-form-familyId" style="display: none;"></label>
+                                <input required readonly type="text" id="modal-form-familyId" name="id" style="display: none;">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-familyName">名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-familyName" name="name" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-describe">描述：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <textarea id="modal-form-describe" name="describe" class="input-xlarge"  style="width:82%;height:60px"
+                                                      ></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-priority">优先级：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input type="text" id="modal-form-priority" name="priority" class="col-xs-12 col-sm-10" placeholder="请填写0-100整数">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+<script type="text/javascript">
+function check_http_code(){
+    if($('#modal-form-code_mode option:selected') .val()=="range"){
+        document.getElementById("div_judge_code21").style.display="block";
+        document.getElementById("div_judge_code22").style.display="block";
+        document.getElementById("div_judge_code23").style.display="block";
+    }else {
+        document.getElementById("div_judge_code21").style.display="none";
+        document.getElementById("div_judge_code22").style.display="none";
+        document.getElementById("div_judge_code23").style.display="none";
+    }
+}
+
+function create_rule(form) {
+    var fd = new FormData(form);
+    console.log($("#back-task-if_head").val());
+    if( $('[name="code_mode"]').val() || $('[name="judge_keyword"]').val() || $('[name="content_mode"]').val()){
+        $.ajax({
+        url: "{{ url_for('web.create_rule') }}",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href="{{ url_for('web.rule_list') }}";
+            }
+        });
+    }else {
+        alert('判断条件不能全部为空');
+    }
+
+    return false;
+}
+function put_rule(form) {
+    var fd = new FormData(form);
+    var ruleId = $('#modal-form-ruleId').val();
+    $.ajax({
+        url: "{{ url_for('web.create_rule') }}/"+ruleId,
+        type: "PUT",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.rule_list') }}";
+        }
+    });
+    return false;
+}
+function del_rule(ruleId) {
+
+    if (!window.confirm('是否_删除规则_')) {
+    } else {
+        $.ajax({
+            url: "{{ url_for('web.create_rule') }}/"+ruleId,
+            type: "DELETE",
+            enctype: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+            }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href = "{{ url_for('web.rule_list') }}";
+            }
+        });
+    }
+    return false;
+}
+function ruleOnclick(ruleId) {
+    var tr = $('#rule-'+ruleId);
+    document.getElementById('modal-form-ruleId').value = ruleId;
+    document.getElementById('modal-form-ruleName').value = tr.find('td:eq(0)').text();
+    document.getElementById('modal-form-inj_point').value = tr.find('td:eq(3)').text();
+    document.getElementById('modal-form-inj_value').value = tr.find('td:eq(4)').text();
+    document.getElementById('modal-form-judge').value = tr.find('td:eq(5)').text();
+    document.getElementById('modal-form-describe').value = tr.find('td:eq(9)').text();
+
+    var $opt = $("#modal-form-rule_family option[value='"+tr.find('td:eq(6)').text()+"']");
+    $opt.attr("selected", true);
+    var $opt_tag = $("#modal-form-rule_tag option[value='"+tr.find('td:eq(7)').text()+"']");
+    $opt_tag.attr("selected", true);
+    var $opt_area = $("#modal-form-rule_area option[value='"+tr.find('td:eq(1)').text()+"']");
+    $opt_area.attr("selected", true);
+    var $opt_way = $("#modal-form-rule_way option[value='"+tr.find('td:eq(2)').text()+"']");
+    $opt_way.attr("selected", true);
+    var $opt_mode = $("#modal-form-rule_mode option[value='"+tr.find('td:eq(8)').text()+"']");
+    $opt_mode.attr("selected", true);
+
+
+    $('#modal-form-rule').modal('show');
+    return false;
+}
+
+function create_family(form) {
+    var fd = new FormData(form);
+    $.ajax({
+        url: "{{ url_for('web.create_rule_family') }}",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.rule_list') }}";
+        }
+    });
+    return false;
+}
+function put_family(form) {
+    var fd = new FormData(form);
+    var familyId = $('#modal-form-familyId').val();
+    $.ajax({
+        url: "{{ url_for('web.create_rule_family') }}/"+familyId,
+        type: "PUT",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.rule_list') }}";
+        }
+    });
+    return false;
+}
+function delete_family(familyId) {
+    if (window.confirm('是否_删除_')) {
+        $.ajax({
+            url: "{{ url_for('web.create_rule_family') }}/"+familyId,
+            type: "DELETE",
+            enctype: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+            }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href = "{{ url_for('web.rule_list') }}";
+            }
+        });
+    }
+    return false;
+}
+function familyOnclick(familyId) {
+    var tr = $('#family-'+familyId);
+    document.getElementById('modal-form-familyId').value = familyId;
+    document.getElementById('modal-form-familyName').value = tr.find('td:eq(1)').text();
+    document.getElementById('modal-form-describe').value = tr.find('td:eq(2)').text();
+    document.getElementById('modal-form-priority').value = tr.find('td:eq(3)').text();
+    $('#modal-form-family').modal('show');
+    return false;
+}
+
+
+
+jQuery(function($) {
+$('#dynamic-table').dataTable({
+		"order":[0,'desc'],
+        paging: false,
+        searching: false
+	});
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect:true});
+
+        $(window)
+        .off('resize.chosen')
+        .on('resize.chosen', function() {
+            $('.chosen-select').each(function() {
+                var $this = $(this);
+                $this.next().css({'width': $this.parent().width()});
+            })
+        }).trigger('resize.chosen');
+
+        $('#modal-form').on('show.bs.modal', function() {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function() {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+    {%- for item in ('rule', 'family') -%}
+        $('#modal-form-add-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function(e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function(e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function(error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function(form) {
+                create_{{ item }}(form);
+            },
+            invalidHandler: function(form) {
+            }
+        });
+        $('#modal-form-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function(e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function(e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function(error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function(form) {
+                put_{{ item }}(form);
+            },
+            invalidHandler: function(form) {
+            }
+        });
+    {%- endfor -%}
+})
+</script>
+{% endblock %}

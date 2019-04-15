@@ -1,0 +1,484 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/bootstrap-duallistbox.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}
+<a href="{{ url_for('web.index') }}">Home</a>
+{% endblock %}
+{% block current_node %}增加规则{% endblock %}
+
+{% block content %}
+<div class="tabbable">
+    <ul class="nav nav-tabs tab-size-bigger" id="plan-tab">
+        <li class="active"  class=""  >
+            <a data-toggle="tab" href="#back-plan">
+                增加规则
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content no-border padding-24">
+
+
+
+    {% macro macro_familys() %}
+        <option>&nbsp;</option>
+        {% for family in familys %}
+
+            <option value="{{ family.desc }}">{{ family.desc }}</option>
+        {% endfor %}
+    {% endmacro %}
+    {% macro macro_ways() %}
+
+        {% for way in ways %}
+            <option value="{{ way.rule_way }}">{{ way.rule_way }}-{{ way.describe }}</option>
+        {% endfor %}
+    {% endmacro %}
+    {% macro macro_areas() %}
+        {% for area in areas %}
+            <option value="{{ area.rule_area }}">{{ area.rule_area }}</option>
+        {% endfor %}
+    {% endmacro %}
+    {% macro macro_codes() %}
+        <option value>&nbsp;</option>
+        {% for code in http_codes %}
+            <option value="{{ code.http_code }}">{{ code.http_code }}-{{ code.code_info }}</option>
+        {% endfor %}
+    {% endmacro %}
+    {% macro macro_tags() %}
+        <option value>&nbsp;</option>
+        {% for tag in tags %}
+            <option value="{{ tag.rule_tag }}">{{ tag.rule_tag }}</option>
+        {% endfor %}
+    {% endmacro %}
+    {% macro macro_modes() %}
+        <option value>&nbsp;</option>
+        {% for mode in modes %}
+            <option value="{{ mode.run_mode }}">{{ mode.run_mode }}</option>
+        {% endfor %}
+    {% endmacro %}
+
+
+
+        <div id="back-plan" class="tab-pane fade in active"  class="tab-pane fade" >
+            <form class="form-horizontal">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-12">
+
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-rule_family">规则类型：</label>
+                                <div class="col-xs-12 col-sm-7">
+                                    <div class="clearfix">
+{#                                         <select   id="modal-form-add-rule_family" name="rule_family" class="form-control" onchange="get_vul()">#}
+                                        <select   id="modal-form-add-rule_family" name="rule_family" class="form-control">
+                                            {{ macro_familys() }}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-ruleName">规则名称：</label>
+                                <div class="col-xs-12 col-sm-7">
+                                    <div class="clearfix">
+                                        <input required type="text" id="modal-form-add-ruleName" name="rule_name" class="col-xs-12 col-sm-10">
+{#                                        <select   id="modal-form-add-rule_name" name="rule_name" class="form-control" >#}
+{#                                        </select>#}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-appname">漏洞等级:</label>
+                                <div class="col-xs-12 col-sm-4">
+                                    <div class="clearfix">
+                                        <select  id="back-bug_level" name="bug_level" class="form-control " >
+                                            <option value="HIGH">HIGH</option>
+                                            <option value="MED">MED</option>
+                                            <option value="LOW">LOW</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-if_head">是否head方法：</label>
+                                <div class="col-xs-12 col-sm-7">
+                                    <div class="clearfix">
+                                         <input id ="back-task-if_head" name="if_head" class="ace ace-switch ace-switch-6" type="checkbox" >
+                                         <span class="lbl"></span>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-run_mode">执行方式：</label>
+                                <div class="col-xs-12 col-sm-7">
+                                    <div class="clearfix">
+                                         <select required id="modal-form-add-run_mode" name="run_mode" class="form-control">
+                                            {{ macro_modes() }}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-rule_area">注入区域：</label>
+                                <div class="col-xs-12 col-sm-7">
+                                    <div class="clearfix">
+                                         <select   id="modal-form-add-rule_area" name="inj_area" class="form-control">
+                                            {{ macro_areas() }}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-rule_way">注入方式：</label>
+                                <div class="col-xs-12 col-sm-7">
+                                    <div class="clearfix">
+                                         <select   id="modal-form-add-rule_way" name="inj_way" class="form-control">
+                                            {{ macro_ways() }}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-inj_point">注入点：</label>
+                                <div class="col-xs-12 col-sm-9">
+                                    <div class="clearfix">
+                                        <textarea id="modal-form-add-inj_point" name="inj_point" class="input-xlarge"  style="width:82%;height:40px"
+                                                  placeholder="请填写正则表达式，如：(path|page|download)"></textarea>   </div>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-inj_value">注入值：</label>
+                                <div class="col-xs-12 col-sm-9">
+                                    <div class="clearfix">
+                                        <textarea id="modal-form-add-inj_value" name="inj_value" class="input-xlarge"  style="width:82%;height:60px"
+                                         required    placeholder="每行一个值，多个值请换行填写"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-judge_code">判断(http_code)：</label>
+                                <div class="row">
+                                    <div class="col-xs-2 col-sm-2">
+                                        <div class="clearfix">
+                                             <select   id="modal-form-code_mode" name="code_mode" class="form-control" onclick="check_http_code()" >
+                                                 <option >&nbsp;</option>
+                                                 <option value="equal">等于</option>
+                                                 <option value="not_equal">不等于</option>
+                                                 <option value="range">范围</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-1 col-sm-1" id="div_judge_code21" style="display:none">
+                                        <div class="clearfix">
+                                            <label> 大于等于 </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2 col-sm-2" >
+                                        <div class="clearfix">
+                                             <select   id="modal-form-judge_code" name="judge_code1" class="form-control">
+                                                {{ macro_codes() }}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-1 col-sm-1" id="div_judge_code22" style="display:none">
+                                        <div class="clearfix">
+                                            <label> 小于等于 </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-2 col-sm-2" id="div_judge_code23" style="display:none">
+
+                                        <div class="clearfix">
+
+                                             <select   id="modal-form-judge_code2" name="judge_code2" class="form-control">
+                                                {{ macro_codes() }}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-judge_keyword">判断(keyword)：</label>
+                                <div class="col-xs-12 col-sm-9">
+                                    <div class="clearfix">
+                                        <textarea id="modal-form-add-judge_keyword" name="judge_keyword" class="input-xlarge"  style="width:82%;height:60px"
+                                                  placeholder="请填写正则表达式，如：(root|bin|nobody)"></textarea>   </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-judge_content">判断内容长度：</label>
+                                <div class="row">
+                                    <div class="col-xs-2 col-sm-2">
+                                            <div class="clearfix">
+                                                 <select   id="modal-form-code_mode" name="content_mode" class="form-control" >
+                                                     <option value="">&nbsp;</option>
+                                                     <option value="greater_than">大于等于</option>
+                                                     <option value="less_than">小于等于</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="clearfix">
+                                            <input type="text" id="modal-form-add-judge_content" name="judge_content"
+                                                   class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-content_similar">判断相似度：</label>
+                                <div class="row">
+                                    <div class="col-xs-2 col-sm-2">
+                                            <div class="clearfix">
+                                                 <select   id="modal-form-similar_mode" name="similar_mode" class="form-control" >
+                                                     <option value="">&nbsp;</option>
+                                                     <option value="greater_than">大于等于</option>
+                                                     <option value="less_than">小于等于</option>
+
+                                                </select>
+                                            </div>
+                                        </div>
+                                    <div class="col-xs-4 col-sm-4">
+                                        <div class="clearfix">
+                                            <input type="text" id="modal-form-add-similar" name="similar" placeholder="请填写0-100之间的值"
+                                                   class="col-xs-12 col-sm-10"> %
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                             <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-describe">描述：</label>
+                                <div class="col-xs-12 col-sm-9">
+                                    <div class="clearfix">
+                                        <textarea id="modal-form-add-describe" name="describe" class="input-xlarge"  style="width:82%;height:40px"
+                                                  ></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="form-group">
+                                <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-describe">解决方案：</label>
+                                <div class="col-xs-12 col-sm-9">
+                                    <div class="clearfix">
+                                        <textarea id="modal-form-add-solution" name="solution" class="input-xlarge"  style="width:82%;height:40px"
+                                                  ></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-sm btn-primary">
+                        <i class="ace-icon fa fa-check"></i>
+                        Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.bootstrap-duallistbox.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/WdatePicker.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+<script type="text/javascript">
+jQuery(function($) {
+
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect:true});
+
+        $(window)
+        .off('resize.chosen')
+        .on('resize.chosen', function() {
+            $('.chosen-select').each(function() {
+                var $this = $(this);
+                $this.next().css({'width': $this.parent().width()});
+            })
+        }).trigger('resize.chosen');
+
+        $(document)
+        .on('settings.ace.chosen', function(e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function() {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                });
+        });
+
+        $('#modal-form').on('show.bs.modal', function() {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function() {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+	$('#back-plan form.form-horizontal').validate({
+        errorElement: 'div',
+        errorClass: 'help-block',
+        focusInvalid: false,
+        ignore: '',
+        highlight: function(e) {
+            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+        },
+        success: function(e) {
+            $(e).closest('.form-group').removeClass('has-error');
+            $(e).remove();
+        },
+        errorPlacement: function(error, element) {
+            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                var controls = element.closest('div[clss*="col-"]');
+                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+            } else if (element.is('.select2')) {
+                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+            } else if (element.is('.chosen-select')) {
+                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+            } else {
+                error.insertAfter(element.parent());
+            }
+        },
+        submitHandler: function(form) {
+            $('#back-submit-button').hide();
+            $('#back-hide-button').show();
+            do_submit(form);
+            $('#back-submit-button').show();
+            $('#back-hide-button').hide();
+        },
+        invalidHandler: function(form) {
+        }
+    });
+
+
+
+});
+function check_http_code(){
+    if($('#modal-form-code_mode option:selected') .val()=="range"){
+        document.getElementById("div_judge_code21").style.display="block";
+        document.getElementById("div_judge_code22").style.display="block";
+        document.getElementById("div_judge_code23").style.display="block";
+    }else {
+        document.getElementById("div_judge_code21").style.display="none";
+        document.getElementById("div_judge_code22").style.display="none";
+        document.getElementById("div_judge_code23").style.display="none";
+    }
+}
+
+function get_vul(){
+    var family_desc = document.getElementById("modal-form-add-rule_family").value;
+    var sel_obj = document.getElementById("modal-form-add-rule_name");
+    var vuls = {{ vuls |safe }};
+{#    console.log(vuls);#}
+    document.getElementById("modal-form-add-rule_name").options.length = 0;
+    for (var i=0;i<vuls.length;i++)
+    {
+        if (vuls[i]['family']==family_desc){
+            sel_obj.options.add(new Option(vuls[i]['vul_id']+'-'+vuls[i]['vul_name'], vuls[i]['vul_id']+'-'+vuls[i]['vul_name']));
+
+        };
+    }
+
+
+}
+function do_submit(form, type) {
+
+    {#var fd = new FormData(form);#}
+    var fd = new FormData(form);
+    console.log($("#back-task-if_head").val());
+    if( $('[name="code_mode"]').val() || $('[name="judge_keyword"]').val() || $('[name="content_mode"]').val()){
+        $.ajax({
+        url: "{{ url_for('web.create_rule') }}",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href="{{ url_for('web.rule_add_html') }}";
+            }
+        });
+    }else {
+        alert('判断条件不能全部为空');
+    }
+
+    return false;
+{#    var run_enable = "0";#}
+{#    var checkobj=document.getElementById("back-task-run_now");#}
+{#    if(checkobj.checked){#}
+{#        run_enable = true;#}
+{#    }#}
+{#    var fd = {plug_name: $('[name="plug_name"]').val(), scan_type:$('[name="scan_type"]').val(),#}
+{#        script_name: $('[name="script_name"]').val(),bug_level: $('[name="bug_level"]').val(),#}
+{#        bug_desc: $('[name="bug_desc"]').val(),bug_solu: $('[name="bug_solu"]').val(),#}
+{#        script_priority: $('[name="script_priority"]').val(),plug_type: $('[name="plug_type"]').val(),#}
+{#        run_enable: $('[name="run_enable"]').val(),tag_label: $('[name="tag_label"]').val()};#}
+{##}
+{#    $.ajax({#}
+{#        url: "{{ url_for('add_script') }}",#}
+{#        type: "POST",#}
+{#        async:true,#}
+{#        data: fd,#}
+{#        enctype: "multipart/form-data",#}
+{##}
+{#        statusCode: {#}
+{#            403: function () {#}
+{#                alert("权限不足, 请联系管理员");#}
+{#            }#}
+{#        }#}
+{#    }).done(function (result) {#}
+{#        console.log(result);#}
+{#        if (result.status == true) {#}
+{#            alert("提交成功");#}
+{#            window.location.href="{{ url_for('web.tasks_list') }}";#}
+{#        } else {#}
+{#            alert("提交失败"+result.desc);#}
+{#        }#}
+{#    });#}
+{#    return false;#}
+}
+
+</script>
+{% endblock %}
+
+

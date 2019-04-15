@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}扫描结果{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class="active"><a href="#taskresult">扫描结果</a></li>
+        </ul>
+        <div class="tab-content padding-24">
+            <div id="task-form" class="tab-pane fade in active">
+                <div class="row"><div class="col-xs-12">
+
+                	  <table class="table table-striped table-bordered table-hover">
+                	     <thead>
+                	     <tr>
+                          <th>漏洞ID</th>
+                          <th>URL</th>
+                          <th>detail</th>
+                         <th>漏洞等级</th>
+
+                	     </tr>
+                	     </thead>
+                	     <tbody>
+                         {% if  process_details|length==0 %}
+                            <span>未扫到该漏洞</span>
+                         {% else %}
+                	     {% for detail in process_details %}
+	                	    <tr>
+		                        <td>{{ detail.vul_id }}</td>
+		                        <td>{{ detail.url }}</td>
+		                        <td>{{ detail.detail }}</td>
+                                <td>{{ detail.level }}</td>
+                            </tr>
+
+                         {% endfor %}
+                         {% endif %}
+                	     </tbody>
+                    </table>
+
+                </div>
+                </div>
+            </div>
+			</div>
+
+
+
+{% endblock %}

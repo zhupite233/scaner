@@ -1,0 +1,243 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/bootstrap-duallistbox.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}
+<a href="{{ url_for('web.index') }}">Home</a>
+{% endblock %}
+{% block current_node %}Web扫描追加漏洞{% endblock %}
+
+{% block content %}
+<div class="tabbable">
+    <ul class="nav nav-tabs tab-size-bigger" id="plan-tab">
+        <li class="active"  class=""  >
+            <a data-toggle="tab" href="#back-plan">
+                Web扫描追加漏洞
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content no-border padding-24">
+
+    {% macro macro_familys() %}
+        <option>&nbsp;</option>
+        {% for family in familys %}
+            <option value="{{ family.desc }}">{{ family.desc }}</option>
+        {% endfor %}
+    {% endmacro %}
+
+
+        <div id="back-plan" class="tab-pane fade in active"  class="tab-pane fade" >
+            <form class="form-horizontal" id="back-plan-form" role="form" >
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-appname">漏洞类型:</label>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="clearfix">
+                            <select   id="modal-form-add-vul_family" name="vul_family" class="form-control" onchange="get_vul()">
+                                {{ macro_familys() }}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-appname">漏洞插件:</label>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="clearfix">
+                            <select  id="modal-form-add-vul_name" name="vul_id"  class="form-control " >
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-vul_url">URL：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <input required type="text" id="modal-form-add-vul_url" name="url" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-vul_detail">漏洞简述：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <input required type="text" id="modal-form-add-vul_detail" name="detail" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-vul_request">请求内容：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <textarea required type="text" id="modal-form-add-vul_request" name="request_content" class="col-xs-12 col-sm-10">
+
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-vul_response">响应内容：</label>
+                    <div class="col-xs-12 col-sm-7">
+                        <div class="clearfix">
+                            <textarea required type="text" id="modal-form-add-vul_response" name="response_content" class="col-xs-12 col-sm-10">
+
+                            </textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right"></label>
+                <div class="col-xs-12 col-sm-9">
+                    <button class="btn btn-success btn-next" id="back-submit-button">
+                        提交
+                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                    </button>
+                    <button class="btn btn-success btn-next" style="display: none;" id="back-hide-button" onclick="return false;">
+                        创建中...
+                    </button>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.bootstrap-duallistbox.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/WdatePicker.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+<script type="text/javascript">
+jQuery(function($) {
+
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect:true});
+
+        $(window)
+        .off('resize.chosen')
+        .on('resize.chosen', function() {
+            $('.chosen-select').each(function() {
+                var $this = $(this);
+                $this.next().css({'width': $this.parent().width()});
+            })
+        }).trigger('resize.chosen');
+
+        $(document)
+        .on('settings.ace.chosen', function(e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function() {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                });
+        });
+
+        $('#modal-form').on('show.bs.modal', function() {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function() {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+	$('#back-plan-form').validate({
+        errorElement: 'div',
+        errorClass: 'help-block',
+        focusInvalid: false,
+        ignore: '',
+        highlight: function(e) {
+            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+        },
+        success: function(e) {
+            $(e).closest('.form-group').removeClass('has-error');
+            $(e).remove();
+        },
+        errorPlacement: function(error, element) {
+            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                var controls = element.closest('div[clss*="col-"]');
+                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+            } else if (element.is('.select2')) {
+                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+            } else if (element.is('.chosen-select')) {
+                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+            } else {
+                error.insertAfter(element.parent());
+            }
+        },
+        submitHandler: function(form) {
+            $('#back-submit-button').hide();
+            $('#back-hide-button').show();
+            do_submit(form);
+            $('#back-submit-button').show();
+            $('#back-hide-button').hide();
+        },
+        invalidHandler: function(form) {
+        }
+    });
+
+
+
+});
+
+function get_vul(){
+    var vuls = {{ vul_json |safe }}
+    var family_name = document.getElementById("modal-form-add-vul_family").value;
+    var sel_obj = document.getElementById("modal-form-add-vul_name");
+    var vul_list = vuls[family_name]
+{#    console.log(vuls);#}
+    document.getElementById("modal-form-add-vul_name").options.length = 0;
+    for (var i=0;i<vul_list.length;i++)
+    {
+            sel_obj.options.add(new Option(vul_list[i]['vul_name'], vul_list[i]['vul_id']));
+    }
+}
+
+
+function do_submit(form) {
+    var fd = new FormData(form);
+{#    var vul_id = document.getElementById("modal-form-add-vul_name").value;#}
+    console.log(fd);
+    if( $('[name="vul_family"]').val() && $('[name="vul_name"]').val() || $('[name="url"]').val()){
+        $.ajax({
+        url: "{{ url_for('web.add_vul2report') }}/{{ task_id }}/{{ site_id }}",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+        }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href = "{{ url_for('web.report_processing') }}/{{ task_id }}";
+            }
+        });
+    }else {
+        alert('必填内容不能为空');
+    }
+    return false;
+}
+
+</script>
+{% endblock %}

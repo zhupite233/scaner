@@ -1,0 +1,25 @@
+.part-1, .part-2, .part-3, .part-4, .part-5, .part-6 {
+  page-break-after: always;
+  padding-top: 30px;
+}
+
+.main-title {
+  font-weight: 900;
+}
+
+.entire-title {
+  padding-left: 40px;
+  margin-left: 0;
+  border-left: 7px solid #2d90e6;
+  margin-top: 200px;
+}
+
+.date {
+  margin-top: 25px;
+}
+
+.cover-bg {
+  background: url('../imgs/cover-bg.png') left top no-repeat;
+  height: 600px;
+  margin-top: 200px;
+}

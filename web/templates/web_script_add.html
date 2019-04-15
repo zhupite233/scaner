@@ -1,0 +1,313 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/bootstrap-duallistbox.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}
+<a href="{{ url_for('web.index') }}">Home</a>
+{% endblock %}
+{% block current_node %}Web插件脚本增加{% endblock %}
+
+{% block content %}
+<div class="tabbable">
+    <ul class="nav nav-tabs tab-size-bigger" id="plan-tab">
+        <li class="active"  class=""  >
+            <a data-toggle="tab" href="#back-plan">
+                Web插件脚本增加
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content no-border padding-24">
+
+    {% macro macro_web_policys() %}
+        <option value>&nbsp;</option>
+        {% for web_policy in policys %}
+            <option value="{{ web_policy.id }}">{{ web_policy.desc }}</option>
+        {% endfor %}
+    {% endmacro %}
+
+        <div id="back-plan" class="tab-pane fade in active"  class="tab-pane fade" >
+            <form class="form-horizontal" id="back-plan-form" role="form" >
+
+
+				<div class="form-group" id="div_spec_reason" >
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-emerge_URL">Web插件名称:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input required type="text" id="back-task_name" name="plug_name" class="col-xs-12 col-sm-5" >
+							</input>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-appname">扫描方式:</label>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="clearfix">
+                            <select  id="back-task_scheme" name="scan_type" class="form-control " >
+                                <option value="1">run_url</option>
+                                <option value="2">run_domain</option>
+                                <option value="3">rule_scan</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-project">脚本名:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input  id="back-task_domain" name="script_name" class="col-xs-12 col-sm-5">
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-appname">漏洞等级:</label>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="clearfix">
+                            <select  id="back-task_scheme" name="bug_level" class="form-control " >
+                                <option value="HIGH">HIGH</option>
+                                <option value="MED">MED</option>
+                                <option value="LOW">LOW</option>
+                                <option value="INFO">INFO</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-desc_other">描述:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <textarea id="back-task_cookie" name="bug_desc" class="input-xlarge"  style="width:60%;height:100px"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-desc_other">解决方案:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <textarea id="back-task_cookie" name="bug_solu" class="input-xlarge"  style="width:60%;height:100px"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-project">优先级:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input  id="back-task_domain" name="script_priority" class="col-xs-12 col-sm-5">
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-appname">插件类型:</label>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="clearfix">
+                            <select  id="back-task_scheme" name="plug_type" class="form-control " >
+                                {{ macro_web_policys() }}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-update_jar">是否启用:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <label>
+                                <input id ="back-task-run_now" name="run_enable" class="ace ace-switch ace-switch-6" type="checkbox"  checked>
+                                <span class="lbl"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                {#<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-project">漏洞ID:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input  id="back-task_domain" name="bug_id" class="col-xs-12 col-sm-5">
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>#}
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-desc_other">tag标签::</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <textarea id="back-task_cookie" name="tag_label" class="input-xlarge"  style="width:60%;height:100px"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>
+
+                {#<div class="form-group">
+                    <label class="col-xs-12 col-sm-3 control-label no-padding-right" for="back-plan-project">tag标签:</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input  id="back-task_domain" name="tag_label" class="col-xs-12 col-sm-5">
+                        </div>
+                    </div>
+                </div>
+                <div class="space-2"></div>#}
+
+
+
+
+
+				<label class="control-label col-xs-12 col-sm-3 no-padding-right"></label>
+                <div class="col-xs-12 col-sm-9">
+                    <button class="btn btn-success btn-next" id="back-submit-button">
+                        提交
+                        <i class="ace-icon fa fa-arrow-right icon-on-right"></i>
+                    </button>
+                    <button class="btn btn-success btn-next" style="display: none;" id="back-hide-button" onclick="return false;">
+                        创建中...
+                    </button>
+                </div>
+            </form>
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.bootstrap-duallistbox.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/WdatePicker.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+<script type="text/javascript">
+jQuery(function($) {
+
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect:true});
+
+        $(window)
+        .off('resize.chosen')
+        .on('resize.chosen', function() {
+            $('.chosen-select').each(function() {
+                var $this = $(this);
+                $this.next().css({'width': $this.parent().width()});
+            })
+        }).trigger('resize.chosen');
+
+        $(document)
+        .on('settings.ace.chosen', function(e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function() {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                });
+        });
+
+        $('#modal-form').on('show.bs.modal', function() {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function() {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+	$('#back-plan-form').validate({
+        errorElement: 'div',
+        errorClass: 'help-block',
+        focusInvalid: false,
+        ignore: '',
+        highlight: function(e) {
+            $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+        },
+        success: function(e) {
+            $(e).closest('.form-group').removeClass('has-error');
+            $(e).remove();
+        },
+        errorPlacement: function(error, element) {
+            if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                var controls = element.closest('div[clss*="col-"]');
+                if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+            } else if (element.is('.select2')) {
+                error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+            } else if (element.is('.chosen-select')) {
+                error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+            } else {
+                error.insertAfter(element.parent());
+            }
+        },
+        submitHandler: function(form) {
+            $('#back-submit-button').hide();
+            $('#back-hide-button').show();
+            do_submit(form);
+            $('#back-submit-button').show();
+            $('#back-hide-button').hide();
+        },
+        invalidHandler: function(form) {
+        }
+    });
+
+
+
+});
+
+function do_submit(form, type) {
+
+    {#var fd = new FormData(form);#}
+    var run_enable = "0";
+    var checkobj=document.getElementById("back-task-run_now");
+    if(checkobj.checked){
+        run_enable = true;
+    }
+    var fd = {plug_name: $('[name="plug_name"]').val(), scan_type:$('[name="scan_type"]').val(),
+        script_name: $('[name="script_name"]').val(),bug_level: $('[name="bug_level"]').val(),
+        bug_desc: $('[name="bug_desc"]').val(),bug_solu: $('[name="bug_solu"]').val(),
+        script_priority: $('[name="script_priority"]').val(),plug_type: $('[name="plug_type"]').val(),
+        run_enable: $('[name="run_enable"]').val(),tag_label: $('[name="tag_label"]').val()};
+
+    $.ajax({
+        url: "{{ url_for('web.add_script') }}",
+        type: "POST",
+        async:true,
+        data: fd,
+        enctype: "multipart/form-data",
+
+        statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+        }
+    }).done(function (result) {
+        console.log(result);
+        if (result.status == true) {
+            alert("提交成功");
+            window.location.href="{{ url_for('web.tasks_list') }}";
+        } else {
+            alert("提交失败"+result.desc);
+        }
+    });
+    return false;
+}
+
+</script>
+{% endblock %}

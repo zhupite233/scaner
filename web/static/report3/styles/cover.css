@@ -1,0 +1,39 @@
+.cover {
+  width: 828px;
+  margin: 0 auto;
+  height: 850px;
+}
+
+.main-title {
+  font-weight: 900;
+}
+
+.entire-title {
+  padding-left: 40px;
+  margin-left: 0;
+  border-left: 20px solid #2d90e6;
+  margin-top: 100px;
+}
+
+.date {
+  margin-top: 25px;
+}
+
+.cover-bg {
+  background: url('../imgs/cover-bg.png') left top no-repeat;
+  height: 500px;
+  background-size: contain;
+  margin-top: 150px;
+}
+
+.f_title {
+  text-align: center;
+}
+
+.logo {
+  margin-top: 150px;
+}
+
+.footer-banner {
+  margin-top: 80px;
+}

@@ -1,0 +1,346 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}扫描报告{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class="active"><a data-toggle="tab" href="#adminUser">报告列表</a></li>
+
+        </ul>
+        <div class="tab-content padding-24">
+            {% macro macro_roles() %}
+
+                {% for role in roles %}
+                    <option value="{{ role.cname }}">{{ role.cname }}</option>
+                {% endfor %}
+            {% endmacro %}
+            <div id="tab-task_list" class="tab-pane fade in active">
+                <div class="row">
+                    <div class="col-xs-6">
+                    <form class="form-inline" role="form" action="{{ url_for('web.report_list') }}" method="get">
+
+								<tr><td>
+                                    <select  name="per_page" >
+                                        <option value="{{ per_page }}">{{ per_page }}</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                    </td>
+									<td>
+										<input type="text"  name="search_msg" style="width:300px;" >
+									</td>
+
+									<td >
+										<button class="btn btn-info" type="submit">
+											<i class="ace-icon fa fa-check bigger-70"></i>
+											搜索
+										</button>
+									</td>
+								</tr>
+                    </form>
+                    </div>
+                    <div class="col-xs-6">
+                        <button class="btn btn-info" type="button"  onclick="patch_download()">
+                            <i class="ace-icon fa fa-check bigger-70"></i>
+                            批量下载报告
+                        </button>
+                    </div>
+                </div>
+                <div class="row"><div class="col-xs-12">
+                    <table id="dynamic-table" class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th class="center"><label class="pos-rel"><input type="checkbox" id="check_rep_all"  class="ace"><span class="lbl"></span></label></th>
+                            <th>TASK_ID</th>
+                            <th>名称</th>
+                            <th>域名</th>
+                            <th>扫描开始时间</th>
+                            <th>扫描完成时间</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%- for task in tasks -%}
+
+                            <tr id="task-{{ task.id }}">
+                            <td class="center"><label class="pos-rel"><input type="checkbox" name="check_rep" value="{{ reports[task.id].job_id }}" class="ace"><span class="lbl"></span></label></td>
+                            <td>{{ task.id }}</td>
+                                <td>{{ task.name }}</td>
+                                 <td>{{ task.target | get_task_domain }}</td>
+                                <td>{{ task.start_time }}</td>
+                                <td>{{ task.end_time }}</td>
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+{#                                            <button class="btn btn-sm btn-warning"#}
+{#                                                    onclick="schedule_job('{{ task.id }}','restart')">#}
+{#                                                <i class="ace-icon fa fa-refresh bigger-120"></i>重新扫描#}
+{#                                            </button>#}
+                                            <a class="btn btn-sm btn-danger"
+                                                    href="{{ url_for('web.add_task_html') }}/{{ task.id }}">
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>编辑重扫
+                                            </a>
+                                            <a href="/task/report/{{ task.id }}" class="btn btn-sm btn-info">历史报告</a>
+                                            <a href="/report/processing/{{ task.id }}" class="btn btn-sm btn-info">漏洞</a>
+                                            {% if reports.has_key(task.id) %}
+                                            <a href="/report2/preview/{{ reports[task.id].job_id }}" class="btn btn-sm btn-info" target="_blank">预览</a>
+                                            <a href="/report2/pdf/{{ reports[task.id].job_id }}" class="btn btn-sm btn-info" target="_blank">PDF</a>
+                                             <button class="btn btn-sm btn-success"
+                                                    onclick="rebuild_rep('{{ reports[task.id].job_id }}')">
+                                                <i class="ace-icon fa fa-refresh bigger-120"></i>重新生成报告
+                                            </button>
+                                            {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {%- endfor -%}
+                        </tbody>
+                    </table>
+                    <div>
+                        <div>{{ pagination.info }}</div>
+                        <div>{{ pagination.links }}</div>
+                    </div>
+                </div></div>
+            </div>
+
+
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.dataTables.bootstrap.min.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+<script type="text/javascript">
+function schedule_job(job_id, oper ) {
+
+    $.ajax({
+        url: "{{ url_for('web.scheduler_job') }}",
+        type: "POST",
+        data: {job_id:job_id,operation: oper},
+        enctype: "multipart/form-data",
+        statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+        }
+
+
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.tasks_list') }}";
+        }
+    });
+    return false;
+}
+
+function del_task_job(job_id) {
+    alert(job_id);
+    if (!window.confirm('是否_删除任务_')) {
+    } else {
+        $.ajax({
+            url: "{{ url_for('web.add_task') }}/"+job_id,
+            type: "DELETE",
+            enctype: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            statusCode: {
+                403: function () {
+                    alert("权限不足, 请联系管理员");
+                }
+            }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href = "{{ url_for('web.tasks_list') }}";
+            }
+        });
+    }
+    return false;
+}
+function rebuild_rep(job_id) {
+{#    alert(job_id);#}
+
+    $.ajax({
+        url: "/report/rebuild/"+job_id,
+        type: "GET",
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href = "{{ url_for('web.report_list') }}";
+        }
+    });
+
+    return false;
+}
+
+$("#check_rep_all").click(function () {
+        if($(this).is(':checked')){
+            $("input[name='check_rep']").prop("checked", true)
+        } else {
+            $("input[name='check_rep']").prop("checked", false)
+        }
+    })
+function patch_download(){
+    var jobs_str = "";
+    $("input[name='check_rep']").each(function(){
+        if($(this).is(':checked')){
+            jobs_str += $(this).val() + ',';
+        }
+    });
+    if (jobs_str!=""){
+
+            var form = $("<form>");   //定义一个form表单
+            form.attr('style', 'display:none');   //在form表单中添加查询参数
+            form.attr('target', '');
+            form.attr('method', 'post');
+            form.attr('action', "/report2/pdf/patch_download");
+
+            var input1 = $('<input>');
+            input1.attr('type', 'hidden');
+            input1.attr('name', 'jobs_str');
+            input1.attr('value', jobs_str);
+            $('body').append(form);  //将表单放置在web中
+            form.append(input1);   //将查询参数控件提交到表单上
+            form.submit();
+
+{#            window.location.href="/report2/pdf/patch_download?jobs_str="+jobs_str;#}
+        }else {alert('请勾选报告')}
+}
+{#function userOnclick(userId) {#}
+{#    var tr = $('#user-'+userId);#}
+{#    document.getElementById('modal-form-userId').value = userId;#}
+{#    document.getElementById('modal-form-userName').value = tr.find('td:eq(0)').text();#}
+{#    document.getElementById('modal-form-userCName').value = tr.find('td:eq(1)').text();#}
+{#    document.getElementById('modal-form-userEmail').value = tr.find('td:eq(2)').text();#}
+{#    document.getElementById('modal-form-userMoblile').value = tr.find('td:eq(3)').text();#}
+{#    document.getElementById('modal-form-userCompany').value = tr.find('td:eq(5)').text();#}
+{#    document.getElementById('modal-form-userDepartment').value = tr.find('td:eq(6)').text();#}
+{#    //document.getElementById('modal-form-userRole').value = tr.find('td:eq(7)').text();#}
+{#    var $opt = $("#modal-form-userRole option[value='"+tr.find('td:eq(7)').text()+"']");#}
+{#    $opt.attr("selected", true);#}
+{#    document.getElementById('modal-form-userGroups').value = tr.find('td:eq(9)').text();#}
+{#    $('#modal-form-user').modal('show');#}
+{#    return false;#}
+{#}#}
+
+
+jQuery(function($) {
+   var table = $('#dynamic-table').dataTable({
+		"order":[0,'desc'],
+{#       serverSide: true,#}
+{#       ajax:'/report'#}
+        paging: false,
+        searching: false
+	});
+
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect:true});
+
+        $(window)
+        .off('resize.chosen')
+        .on('resize.chosen', function() {
+            $('.chosen-select').each(function() {
+                var $this = $(this);
+                $this.next().css({'width': $this.parent().width()});
+            })
+        }).trigger('resize.chosen');
+
+        $('#modal-form').on('show.bs.modal', function() {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function() {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+    {%- for item in ('user', 'group', 'selector') -%}
+        $('#modal-form-add-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function(e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function(e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function(error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function(form) {
+                create_{{ item }}(form);
+            },
+            invalidHandler: function(form) {
+            }
+        });
+        $('#modal-form-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function(e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function(e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function(error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function(form) {
+                put_{{ item }}(form);
+            },
+            invalidHandler: function(form) {
+            }
+        });
+    {%- endfor -%}
+})
+</script>
+{% endblock %}

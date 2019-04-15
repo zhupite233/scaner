@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}任务管理{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class=""><a data-toggle="tab" href="/task/form">添加任务</a></li>
+            <li class=""><a data-toggle="tab" href="/task/list">任务列表</a></li>
+            <li class="active"><a data-toggle="tab" href="#taskinfo">任务详情</a></li>
+        </ul>
+        <div class="tab-content padding-24">
+            <div id="task-form" class="tab-pane fade in active">
+                <div class="row"><div class="col-xs-12">
+                	<form action="/task/create" method="post">
+                    <table class="table table-striped table-bordered table-hover">
+	                    <tr>
+	                        <td>ID</td>
+	                        <td>{{ task.id }}</td>
+	                    </tr>
+	                    <tr>
+	                        <td>任务名称</td>
+	                        <td>{{ task.name }}</td>
+	                    </tr>
+	                    <tr>
+	                        <td>域名</td>
+	                        <td>{{ task.target }}</td>
+	                    </tr>
+                        <tr>
+	                        <td>最大抓取页面数</td>
+	                        <td>{{ task.spider_url_count }}</td>
+	                    </tr>
+                        <tr>
+	                        <td>策略ID</td>
+	                        <td>{{ task.web_scan_policy }}</td>
+	                    </tr>
+	                    <tr>
+	                        <td>扫描超时时间</td>
+	                        <td>{{ task.web_scan_timeout }}</td>
+	                    </tr>
+                    </table>
+                    </form>
+                </div></div>
+            </div>
+{% endblock %}

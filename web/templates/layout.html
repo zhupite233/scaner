@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}漏洞扫描系统{% endblock %}</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <!-- bootstrap & font-awesome -->
+    <link rel="stylesheet" href="{{ url_for("static", filename="ace/css/bootstrap.min.css") }}" />
+    <link rel="stylesheet" href="{{ url_for("static", filename="ace/font-awesome/4.2.0/css/font-awesome.min.css") }}" />
+    <!-- page specific plugin styles -->
+    {% block page_css %}{% endblock %}
+
+    <!-- text fonts -->
+{#    <link rel="stylesheet" href="{{ url_for("static", filename="ace/fonts/fonts.googleapis.com.css") }}" />#}
+    <!-- ace styles -->
+    <link rel="stylesheet" href="{{ url_for("static", filename="ace/css/ace.min.css") }}" class="ace-main-stylesheet" id="main-ace-style" />
+    <link rel="stylesheet" href="{{ url_for("static", filename="ace/css/ace-rtl.min.css") }}" />
+	
+	<!--[if lte IE 9]>
+        <link rel="stylesheet" href="{{ url_for("static", filename="ace/css/ace-part2.min.css") }}" class="ace-main-stylesheet" />
+        <link rel="stylesheet" href="{{ url_for("static", filename="ace/css/ace-ie.min.css") }}" />
+    <![endif]-->
+
+    <!-- inline styles related to this page -->
+    {% block inline_css %}{% endblock %}
+
+    <!-- ace settings handler -->
+    <script src="{{ url_for("static", filename="ace/js/ace-extra.min.js") }}"></script>
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+    <!--[if lte IE 8]>
+        <script src="{{ url_for("static", filename="ace/js/html5shiv.min.js") }}"></script>
+        <script src="{{ url_for("static", filename="ace/js/respond.min.js") }}"></script>
+    <![endif]-->
+</head>
+<body class="no-skin">
+    <div id="navbar" class="navbar navbar-default">
+        <script type="text/javascript">
+            try{ace.settings.check('navbar', 'fixed')}catch(e){}
+        </script>
+
+        <div class="navbar-container" id="navbar-container">
+            <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+                <span class="sr-only">Toggle sidebar</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <div class="navbar-header pull-left">
+                <a href="/" class="navbar-brand">
+                    <small>
+                        <i class="fa fa-leaf"></i>
+                        {{ self.title() }}
+                    </small>
+                </a>
+            </div>
+
+            <div class="navbar-buttons navbar-header pull-right" role="navigation">
+                <ul class="nav ace-nav">
+                    <li class="light-blue">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <!-- <img class="nav-user-photo" src="{{ url_for('static', filename='ace/avatars/profile-pic.jpg') }}" alt="Photo" /> -->
+                            <span class="user-info">
+                                <small>Welcome,</small>
+                                {{ session.get('username', 'GUEST') }}
+                            </span>
+                            <i class="ace-icon fa fa-caret-down"></i>
+                        </a>
+
+                        <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                            <li>
+                                <a href="{{ url_for('web.do_logout') }}">
+                                    <i class="ace-icon fa fa-power-off"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div><!-- /.navbar-container -->
+    </div>
+
+    <div class="main-container" id="main-container">
+        <script type="text/javascript">
+            try{ace.settings.check('main-container', 'fixed')}catch(e){}
+        </script>
+
+        <div id="sidebar" class="sidebar responsive">
+            <script type="text/javascript">
+                try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+            </script>
+
+            <ul class="nav nav-list">
+
+            {% if 'sb_task' in session.get('selectors', ()) %}
+                <li id="sb-task" class="{% if level_one == 'task' %}active open{% endif %}">
+                    <a href="#" class="dropdown-toggle ">
+                        <i class="menu-icon fa fa-pencil-square-o"></i>
+                        <span class="menu-text">WEB扫描</span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+
+                        <li id="sidebar-plan-show" class="{% if level_two == 'report' %}active{% endif %}">
+                            <a href="{{ url_for('web.report_list') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                报告列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li id="sidebar-plan-show" class="{% if level_two == 'add_task' %}active{% endif %}">
+                            <a href="{{ url_for('web.tasks_list') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Web扫描
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                {% endif %}
+            {% if 'sb_user' in session.get('selectors', ()) %}
+                <li id="sb-admin" class="{% if level_one == 'admin' %}active open{% endif %}">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-desktop"></i>
+                        <span class="menu-text">用户管理</span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="sb-adminUser" class="{% if level_two == 'users' %}active{% endif %}">
+                            <a href="{{ url_for('web.user_list') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                用户列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if 'sb_policy' in session.get('selectors', ()) %}
+                <li id="sb-policy" class="{% if level_one == 'admin' %}active open{% endif %}">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-desktop"></i>
+                        <span class="menu-text">策略管理</span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="sb-policylist" class="">
+                            <a href="{{ url_for('web.policy_list') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                策略列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li id="sb-policylist" class="">
+                            <a href="{{ url_for('web.add_script') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                增加插件
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if 'sb_policy' in session.get('selectors', ()) %}
+                <li id="sb-rule" class="{% if level_one == 'rule' %}active open{% endif %}">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-desktop"></i>
+                        <span class="menu-text">规则管理</span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="sb-rule_list" class="{% if level_two == 'list' %}active{% endif %}">
+                            <a href="{{ url_for('web.rule_list') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                规则列表
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li id="sb-rule_add" class="{% if level_two == 'list' %}active{% endif %}">
+                            <a href="{{ url_for('web.rule_add_html') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                规则添加
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+            {% if 'sb_report' in session.get('selectors', ()) %}
+                <li id="sb-report" class="{% if level_one == 'report' %}active open{% endif %}">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-desktop"></i>
+                        <span class="menu-text">报告管理</span>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="sb-rule_list" class="{% if level_two == 'list' %}active{% endif %}">
+                            <a href="{{ url_for('web.report_model_list') }}">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                PDF报告模板
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+            {% endif %}
+
+
+            {% if 'sb-advise' in session.get('selectors', ()) %}
+                <li id="sb-advise" class="">
+                    <a href="">
+                        <i class="menu-icon fa fa-comments"></i>
+                        <span class="menu-text">意见反馈</span>
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+            {% endif %}
+            </ul><!-- /.nav-list -->
+
+            <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+                <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+            </div>
+
+            <script type="text/javascript">
+                try{ace.settings.check('sidebar', 'collapsed')}catch(e){}
+            </script>
+        </div>
+
+        <div class="main-content">
+            <div class="main-content-inner">
+                <div class="breadcrumbs" id="breadcrumbs">
+                    <script type="text/javascript">
+                        try{ace.settings.check('breadcrumbs', 'fixed')}catch(e){}
+                    </script>
+
+                    <ul class="breadcrumb">
+                        <li>
+                            <i class="ace-icon fa fa-home home-icon"></i>
+                            {% block parent_node %}{% endblock %}
+                        </li>
+                        <li class="active">{% block current_node %}{% endblock %}</li>
+                    </ul><!-- /.breadcrumb -->
+                </div>
+
+                <div class="page-content">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <!-- PAGE CONTENT BEGINS -->
+                            {% block content %}{% endblock %}
+                            <!-- PAGE CONTENT ENDS -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.page-content -->
+            </div>
+        </div><!-- /.main-content -->
+
+        <div class="footer">
+            <div class="footer-inner">
+                <div class="footer-content">
+                    <span class="bigger-120">
+                        <span class="blue bolder"></span>
+                        {{ session.get('company', ()) }} &copy; 2016-2017
+                    </span>
+                    &nbsp; &nbsp;
+                </div>
+            </div>
+        </div>
+
+        <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+            <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+        </a>
+    </div><!-- /.main-container -->
+
+    <!-- jQuery -->
+    <!--[if !IE]> -->
+    <script src="{{ url_for('static', filename='ace/js/jquery.2.1.1.min.js') }}"></script>
+    <!-- <![endif]-->
+    <!--[if IE]>
+        <script src="{{ url_for('static', filename='ace/js/jquery.1.11.1.min.js') }}"></script>
+    <![endif]-->
+
+    <!--[if !IE]> -->
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='{{ url_for('static', filename='ace/js/jquery.min.js') }}'>"+"<"+"/script>");
+    </script>
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='{{ url_for('static', filename='ace/js/jquery1x.min.js') }}'>"+"<"+"/script>");
+    </script>
+    <![endif]-->
+    <script type="text/javascript">
+        if('ontouchstart' in document.documentElement) document.write("<script src='{{ url_for('static', filename='ace/js/jquery.mobile.custom.min.js') }}'>"+"<"+"/script>");
+    </script>
+
+    <!-- Bootstrap -->
+    <script src="{{ url_for('static', filename='ace/js/bootstrap.min.js') }}"></script>
+    <!-- page specific plugin scripts -->
+    {% block page_js %}{% endblock %}
+
+    <!-- ace scripts -->
+    <script src="{{ url_for('static', filename='ace/js/ace-elements.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='ace/js/ace.min.js') }}"></script>
+
+
+    <!-- inline scripts related to this page -->
+    <script type="text/javascript">
+        $(function () {
+            var url = window.location.pathname,
+                url_2 = window.location.pathname.split('/')[1];
+            $('#sidebar-'+url_2).addClass('active open');
+            $('#sidebar > ul.nav.nav-list > li.active > ul.submenu > li').each(function (index, element) {
+                var re = new RegExp($(this).find('a').eq(0).attr('href'), 'i');
+                if (re.test(url)) {
+                    $(this).addClass('active');
+                }
+            });
+        })
+    </script>
+	
+    {% block inline_js %}{% endblock %}
+</body>
+</html>

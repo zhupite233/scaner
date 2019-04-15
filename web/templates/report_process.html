@@ -1,0 +1,247 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}"/>
+    <style>
+        .url_style {
+            white-space: normal;
+            width: 600px;
+            display: inline-block;
+        }
+    </style>
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}漏洞列表{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+    <ul class="nav nav-tabs tab-size-bigger">
+        <li class="active"><a href="#taskresult">漏洞列表</a></li>
+    </ul>
+    <div class="tab-content padding-24">
+        <div id="task-form" class="tab-pane fade in active">
+            <div class="row">
+                <div class="col-xs-6">
+                    <a class="btn btn-xs btn-info"
+                       href="{{ url_for('web.add_vul2report') }}/{{ task_id }}/{{ site_id }}">
+                        <i class="ace-icon fa fa-plus bigger-120"></i>追加漏洞到扫描报告
+                    </a>
+                </div>
+                <div class="col-xs-6">
+                    <button class="btn btn-danger" type="button" onclick="patch_del_vul()">
+                        <i class="ace-icon fa fa-check bigger-70"></i>
+                        批量删除漏洞
+                    </button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th class="center"><label class="pos-rel"><input type="checkbox" id="check_vul_all"
+                                                                             class="ace"><span
+                                    class="lbl"></span></label></th>
+
+                            <th>漏洞ID</th>
+                            <th>漏洞名称</th>
+                            <th>URL</th>
+                            <th>类型</th>
+                            <th>风险等级</th>
+                            <th>操作</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in viruses %}
+                            <tr>
+                                <td class="center"><label class="pos-rel"><input type="checkbox" name="check_vul"
+                                                                                 value="{{ result.id }}"
+                                                                                 class="ace"><span
+                                        class="lbl"></span></label></td>
+
+                                <td>{{ result.vul_id }}</td>
+                                <td>{{ result.vul_name }}</td>
+                                <td><span class="url_style">{{ result.url }}</span></td>
+                                <td>{{ result.family }}</td>
+                                <td>{{ result.level }}</td>
+                                <td>
+
+                                    <input type="button" onclick="display_viruse({{ result.id }}, {{ result.vul_id }})"
+                                           value="漏洞详情">
+                                    <input type="button" onclick="del_viruse({{ result.id }}, {{ result.task_id }})"
+                                           value="删除">
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="viruseDetail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" style="display: inline-block; width: 80%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">漏洞详情</h4>
+                </div>
+                <div class="modal-body">
+                    <table>
+                        <tr>
+                            <td>ID</td>
+                            <td id="viruse_id"></td>
+                        </tr>
+                        <tr>
+                            <td>名称</td>
+                            <td id="viruse_name"></td>
+                        </tr>
+                        <tr>
+                            <td>类型</td>
+                            <td id="viruse_family"></td>
+                        </tr>
+                        <tr>
+                            <td>风险等级</td>
+                            <td id="viruse_level"></td>
+                        </tr>
+                        <tr>
+                            <td>扫描脚本</td>
+                            <td id="viruse_script"></td>
+                        </tr>
+                        <tr>
+                            <td>描述</td>
+                            <td id="viruse_desc"></td>
+                        </tr>
+                        <tr>
+                            <td>解决方案</td>
+                            <td id="viruse_solu"></td>
+                        </tr>
+                        <tr>
+                            <td>URL</td>
+                            <td id="result_url"></td>
+                        </tr>
+                        <tr>
+                            <td>Request</td>
+                            <td id="result_request"></td>
+                        </tr>
+                        <tr>
+                            <td>Response</td>
+                            <td id="result_response"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+
+{% endblock %}
+{% block inline_js %}
+    <script>
+
+        function display_viruse(id, vul_id) {
+            $.ajax({
+                //url: "/report/viruse/" + id + "/" + vul_id,
+                url: "{{ url_for('web.report_viruse') }}/" + id + "/" + vul_id,
+                type: "GET",
+                processData: false,
+                contentType: false,
+                statusCode: {
+                    403: function () {
+                        alert("权限不足, 请联系管理员");
+                    }
+                }
+            }).done(function (result) {
+                if (result.status) {
+                    viruse = result.viruse;
+                    webResult = result.webResult;
+                    $('#viruse_id').html(viruse.id);
+                    $('#viruse_name').html(viruse.vul_name);
+                    $('#viruse_family').html(viruse.family);
+                    $('#viruse_level').html(viruse.level);
+                    $('#viruse_script').html(viruse.script);
+                    $('#viruse_desc').html(viruse.desc);
+                    $('#viruse_solu').html(viruse.solu);
+                    $('#result_url').html(webResult.url);
+                    $('#result_request').html("<pre>" + webResult.request + "</pre>");
+                    $('#result_response').html("<pre>" + webResult.response + "</pre>");
+                    $('#viruseDetail').modal({keyboard: true});
+                }
+            });
+        }
+        function del_viruse(id, task_id) {
+
+            if (!window.confirm('是否_确认要删除_')) {
+            } else {
+                $.ajax({
+                    url: "/report/processing/" + id,
+                    type: "DELETE",
+                    enctype: "multipart/form-data",
+                    processData: false,
+                    contentType: false,
+                    statusCode: {
+                        403: function () {
+                            alert("权限不足, 请联系管理员");
+                        }
+                    }
+                }).done(function (result) {
+
+                    if (!result.status) {
+                        alert(result.desc);
+                    } else {
+                        window.location.href = "/report/processing/" + task_id;
+                    }
+                });
+            }
+            return false;
+        }
+        ;
+         $("#check_vul_all").click(function () {
+            if ($(this).is(':checked')) {
+                $("input[name='check_vul']").prop("checked", true)
+            } else {
+                $("input[name='check_vul']").prop("checked", false)
+            }
+        });
+        function patch_del_vul() {
+            if (!window.confirm('是否_确认要删除_')) {
+            } else {
+                var vul_str = "";
+                $("input[name='check_vul']").each(function () {
+                    if ($(this).is(':checked')) {
+                        vul_str += $(this).val() + ',';
+                    }
+                });
+                if (vul_str != "") {
+
+                    var form = $("<form>");   //定义一个form表单
+                    form.attr('style', 'display:none');   //在form表单中添加查询参数
+                    form.attr('target', '');
+                    form.attr('method', 'post');
+                    form.attr('action', "/report/processing/patch");
+
+                    var input1 = $('<input>');
+                    var input2 = $('<input>');
+                    input1.attr('type', 'hidden');
+                    input1.attr('name', 'vul_str');
+                    input1.attr('value', vul_str);
+                    input2.attr('type', 'hidden');
+                    input2.attr('name', 'task_id');
+                    input2.attr('value', {{ task_id }});
+                    $('body').append(form);  //将表单放置在web中
+                    form.append(input1);   //将查询参数控件提交到表单上
+                    form.append(input2);
+                    form.submit();
+
+                } else {
+                    alert('请勾选')
+                }
+            }
+        }
+    </script>
+{% endblock %}

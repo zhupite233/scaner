@@ -1,0 +1,432 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}扫描方案管理{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <ul class="nav nav-tabs tab-size-bigger">
+            <li class="active"><a data-toggle="tab" href="#webPolicy">web扫描</a></li>
+            <li class=""><a data-toggle="tab" href="#hostPolicy">主机扫描</a></li>
+            <li class=""><a data-toggle="tab" href="#portPolicy">端口扫描</a></li>
+        </ul>
+        <div class="tab-content padding-24">
+            <div id="adminUser" class="tab-pane fade in active">
+                <div class="row"><div class="col-xs-12">
+                        <a class="btn btn-xs btn-info" href="{{ url_for ('web.policy_create') }}">
+                            <i class="ace-icon fa fa-plus bigger-120"></i>新增策略
+                        </a>
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>策略ID</th>
+                            <th>策略名称</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%- for policy in web_policys -%}
+                            <tr id="policy-{{ policy.id }}">
+                                <td>{{ policy.id }}</td>
+                                <td>{{ policy.name }}</td>
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+
+                                        {# 修改按钮 #}
+{#                                        <button class="btn btn-xs btn-info" onclick="update_policy('{{ policy.id }}','web')">#}
+                                            <a href="{{  url_for('web.policy_info', policy_id=policy.id) }}">
+                                                <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                            </a>
+{#                                        </button>#}
+                                        {# 删除按钮 #}
+                                        <button class="btn btn-xs btn-danger" onclick="delete_policy('{{ policy.id }}', 'web')">
+                                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                        </button>
+                                   {#  {%- endif -%}  #}
+                                    </div>
+                                </td>
+                            </tr>
+                        {%- endfor -%}
+                        </tbody>
+                    </table>
+                </div></div>
+            </div>
+            <div id="adminGroup" class="tab-pane fade">
+                <div class="row"><div class="col-xs-12">
+                    {%- if 'adminCreateGroup' in session.get('selectors', ()) -%}
+                        <button class="btn btn-xs btn-info" onclick="$('#modal-form-add-group').modal('show');">
+                            <i class="ace-icon fa fa-plus bigger-120"></i>
+                        </button>
+                    {%- endif -%}
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>方案名称</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%- for policy in web_policys -%}
+                            <tr id="policy-{{ policy.id }}">
+                                <td>{{ policy.id }}</td>
+                                <td>{{ policy.name }}</td>
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+                                        {%- if 'adminCreateGroup' in session.get('selectors', ()) -%}
+                                            <button class="btn btn-xs btn-info" onclick="groupOnclick('{{ selector.id }}');">
+                                                <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                            </button>
+                                        {%- endif -%}
+                                        {%- if 'adminDeleteGroup' in session.get('selectors', ()) -%}
+                                            <button class="btn btn-xs btn-danger" onclick="delete_group('{{ selector.id }}');">
+                                                <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                            </button>
+                                        {%- endif -%}
+                                    </div>
+                                </td>
+                            </tr>
+                        {%- endfor -%}
+                        </tbody>
+                    </table>
+                </div></div>
+            </div>
+            <div id="policySelector" class="tab-pane fade">
+                <div class="row"><div class="col-xs-12">
+
+                        <button class="btn btn-xs btn-info" onclick="$('#modal-form-add-selector').modal('show');">
+                            <i class="ace-icon fa fa-plus bigger-120"></i>
+                        </button>
+
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>方案名称</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {%- for selector in selectors -%}
+                            <tr id="selector-{{ selector.id }}">
+                                <td>{{ selector.id }}</td>
+                                <td>{{ selector.name }}</td>
+                                <td>
+                                    <div class="hidden-sm hidden-xs btn-group">
+                                    {# {% if 'adminCreateSelector' in session.get('selectors', ()) %} #}
+                                        <button class="btn btn-xs btn-info" onclick="selectorOnclick('{{ selector.id }}');">
+                                            <i class="ace-icon fa fa-pencil bigger-120"></i>
+                                        </button>
+                                  {#   {% endif %}  #}
+                                    {# {%- if 'adminDeleteSelector' in session.get('selectors', ()) -%} #}
+                                        <button class="btn btn-xs btn-danger" onclick="delete_selector('{{ selector.id }}');">
+                                            <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                                        </button>
+                                   {#  {%- endif -%}  #}
+                                    </div>
+                                </td>
+                            </tr>
+                        {%- endfor -%}
+                        </tbody>
+                    </table>
+                </div></div>
+            </div>
+        </div>
+    </div>
+    <div id="modal-form-add-policy" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form-add-policy').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">请提交策略信息:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-policyName">策略名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-add-policyName" name="policyName" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-policyCName">vul列表(英文半角逗号分隔)：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-add-vulList" name="vulList" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-add-policyType">扫描引擎：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required readonly="true" type="text" id="modal-form-add-engineType" name="engine" value="web" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modal-form-selector" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" onclick="$('#modal-form-selector').modal('hide');">&times;</button>
+                    <h4 class="blue bigger">策略详情及修改:</h4>
+                </div>
+                <form class="form-horizontal">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-9">
+                                 <div class="form-group">
+
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-selectorId">策略ID：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required readonly="true" type="text" id="modal-form-selectorId" name="policy_id" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                {# <label for="modal-form-selectorId" style="display: none;"></label>
+                                <input required readonly type="text" id="modal-form-selectorId" name="id" style="display: none;">#}
+                                <div class="form-group">
+                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-selectorName">策略ID：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                             <input required readonly="true" type="text" id="modal-form-selectorName" name="policy_id" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-selectorKind">创建者：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required readonly="true" type="text" id="modal-form-selectorKind" name="user_name" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-selectorCName">策略名称：</label>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <div class="clearfix">
+                                            <input required type="text" id="modal-form-selectorCName" name="cname" class="col-xs-12 col-sm-10">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-2"></div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-sm btn-primary">
+                            <i class="ace-icon fa fa-check"></i>
+                            Submit
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+{% block inline_js %}
+
+
+<script type="text/javascript">
+function create_policy(form) {
+    var fd = new FormData(form);
+    $.ajax({
+        url: "{{ url_for('web.policy_create') }}",
+        type: "POST",
+        data: fd,
+        enctype: "multipart/form-data",
+        processData: false,
+        contentType: false,
+        statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+        }
+    }).done(function (result) {
+        alert(result.desc);
+        if (result.status) {
+            window.location.href="{{ url_for('web.policy_list') }}";
+        }
+    });
+    return false;
+}
+
+function delete_policy(policy_id,engine) {
+    if (window.confirm('是否_删除_')) {
+        $.ajax({
+            url: "{{ url_for('web.policy_delete') }}",
+            type: "POST",
+            data: {engine:engine,policy_id:policy_id},
+            enctype: "multipart/form-data",
+            //processData: false,
+            //contentType: false
+            statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+        }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                window.location.href = "{{ url_for('web.policy_list') }}";
+            }
+        });
+    }
+    return false;
+}
+
+function update_policy(policy_id) {
+ $.ajax({
+            url: "{{ url_for('web.policy_update') }}",
+            type: "GET",
+            data: {policy_id:policy_id},
+            enctype: "multipart/form-data",
+            processData: false,
+            contentType: false,
+            statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+        }
+        });
+}
+
+function selectorOnclick(selectorId) {
+    var tr = $('#selector-'+selectorId);
+    document.getElementById('modal-form-selectorId').value = selectorId;
+    document.getElementById('modal-form-selectorName').value = tr.find('td:eq(1)').text();
+    document.getElementById('modal-form-selectorCName').value = tr.find('td:eq(2)').text();
+    document.getElementById('modal-form-selectorKind').value = tr.find('td:eq(3)').text();
+    $('#modal-form-selector').modal('show');
+    return false;
+}
+
+jQuery(function($) {
+    if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({allow_single_deselect: true});
+
+        $(window)
+                .off('resize.chosen')
+                .on('resize.chosen', function () {
+                    $('.chosen-select').each(function () {
+                        var $this = $(this);
+                        $this.next().css({'width': $this.parent().width()});
+                    })
+                }).trigger('resize.chosen');
+
+        $('#modal-form').on('show.bs.modal', function () {
+            if (!ace.vars['touch']) {
+                $(this).find('.chosen-container').each(function () {
+                    $(this).find('a:first-child').css('width', '210px');
+                    $(this).find('.chosen-drop').css('width', '210px');
+                    $(this).find('.chosen-search input').css('width', '210px');
+                });
+            }
+        });
+    }
+
+    {%- for item in ('policy', 'group', 'selector') -%}
+        $('#modal-form-add-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function (error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function (form) {
+                create_{{ item }}(form);
+            },
+            invalidHandler: function (form) {
+            }
+        });
+        $('#modal-form-{{ item }} form.form-horizontal').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            ignore: '',
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error');
+                $(e).remove();
+            },
+            errorPlacement: function (error, element) {
+                if (element.is('input[type=checkbox]') || element.is('input[type=radio]')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if (controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                } else if (element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                } else if (element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                } else {
+                    error.insertAfter(element.parent());
+                }
+            },
+            submitHandler: function (form) {
+                put_{{ item }}(form);
+            },
+            invalidHandler: function (form) {
+            }
+        });
+    {%- endfor -%}
+})
+</script>
+{% endblock %}

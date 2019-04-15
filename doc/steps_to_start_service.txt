@@ -1,0 +1,15 @@
+cd /wls/wls81/scaner
+git pull origin master
+
+管理后台页面、URL代码有变更就要重启
+cd /wls/wls81
+./start_stop_service.sh restart
+
+重启celery后台
+cd /wls/wls81
+supervisorctl restart all
+
+
+不用supervisorctl，直接命令启动单个celery 队列
+cd /wls/wls81/scaner
+/wls/wls81/scan_env/bin/python /wls/wls81/scan_env/bin/celery worker -A celery_worker.celery -Q <队列名在config.py下> --loglevel=info --concurrency=4

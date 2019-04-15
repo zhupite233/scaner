@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>扫描报表封面</title>
+    <style>
+    .fitsize{
+        width: 1200px;
+        margin: 0 auto;
+    }
+    .scan-title {
+                position: absolute;
+                top: 586px;
+                left: 35%;
+                right: 0;
+                font-size: 37px;
+            }
+    </style>
+</head>
+<body>
+    <div class="fitsize">
+                <img style="height:1680px;" src="/static/report2/imgs/cover.jpg" alt="封面">
+                <div class="scan-title">扫描时间:<span id="getTime"></span></div>
+            </div>
+</body>
+<script type="text/javascript">
+var getTime=document.getElementById('getTime');
+getTime.innerHTML = '{{ create_date }}';
+</script>
+</html>

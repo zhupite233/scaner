@@ -1,0 +1,265 @@
+{% extends "layout.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ace/css/chosen.min.css') }}" />
+{% endblock %}
+
+{% block parent_node %}<a href="{{ url_for('web.index') }}">Home</a>{% endblock %}
+{% block current_node %}扫描策略编辑{% endblock %}
+
+{% block content %}
+    <div class="tabbable">
+        <div class="tab-content padding-24">
+            <div id="adminUser" class="tab-pane fade in active">
+                <div class="row"><div class="col-xs-12">
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-selectorCName">策略ID：</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input required type="text" readonly="true" id="modal-form-selectorCName" name="policy_id" value="{{ policy_id }}" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-selectorCName">策略名称：</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input required type="text" readonly="true" id="policy_name" name="policy_name" value="{{ policy_name }}" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="modal-form-selectorCName">创建者：</label>
+                    <div class="col-xs-12 col-sm-9">
+                        <div class="clearfix">
+                            <input required type="text" readonly="true" id="modal-form-selectorCName" name="policy_user" value="{{ policy_user }}" class="col-xs-12 col-sm-10">
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="col-lg-6">
+                        <table class="table table-striped table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>扫描类型ID</th>
+                                <th>扫描类型</th>
+                                <th>
+                                    <span>全选/反选</span>
+                                        <input id="checkall_family"  type="checkbox" name="checkall_family" class="ace" onclick="check_all_family(),show_family()"/>
+                                     <span class="lbl"></span>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {%- for family_id in family_dict -%}
+                                <tr id="family-{{ family_id }}" onclick="show_family('{{ family_id }}')">
+                                    <td>{{ family_id }}</td>
+                                    <td>{{ family_dict[family_id]["name"] }}</td>
+                                    <td>
+                                        <div class="hidden-sm hidden-xs btn-group">
+                                            <label class="pos-rel">
+                                                <input id="familycheckbox-{{ family_id }}" type="checkbox" name="checkfamily" class="ace" {% if family_dict[family_id]["state"] == 1 %} checked="unchecked" {% endif %} onclick="check_family('{{ family_id }}')"/>
+                                                <span class="lbl"></span>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {%- endfor -%}
+                            </tbody>
+                        </table>
+                     </div>
+                        <div class="col-lg-6">
+{#                        <table class="table table-striped table-bordered table-hover">#}
+{#                            <thead>#}
+{#                                <tr>#}
+{#                                    <th>漏洞ID</th>#}
+{#                                    <th>漏洞名称</th>#}
+{#                                    <th>选择状态</th>#}
+{#                                </tr>#}
+{#                            </thead>#}
+                            <table id="vulWrap" class="table table-striped table-bordered table-hover">
+                            </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-offset-11">
+                <button class="btn btn-success btn" id="back-submit-button" onclick="submit()">
+                    提交
+                    <i class="ace-icon  icon-on-right"></i>
+                </button>
+            </div>
+{% endblock %}
+
+{% block page_js %}
+<script src="{{ url_for('static', filename='ace/js/chosen.jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='ace/js/jquery.validate.min.js') }}"></script>
+{% endblock %}
+
+{% block inline_js %}
+
+
+<script type="text/javascript" charset="utf-8">
+var policy_id = {{ policy_id }};
+var vul = {{ vul_json|safe }};
+var family = {{ family_json|safe }};
+var vul_bak = $.extend(true, {}, vul);
+var family_bak = $.extend(true,{}, family );
+var vul_init_array = make_vul_array(family, vul);
+{#console.log(vul);#}
+{#console.log(family);#}
+{#console.log(vul_init_array);#}
+
+
+function make_vul_array(family_obj, vul_obj) {
+    var vul_array = new Array();
+    var i = 0;
+        for (var family_id in family_obj) {
+            for (var vul_id in vul_obj[family_id]) {
+                if (vul_obj[family_id][vul_id].state == 1) {
+                    vul_array[i] = vul_id;
+                    i++;
+                }
+            }
+    }
+    return vul_array;
+}
+
+function show_family(family_id) {
+    var vulSubdata = vul_bak[family_id];
+    var checkbox_state = $("#familycheckbox-" + family_id).prop("checked");
+    cells = '';
+    cells+='<thead>';
+    cells+=  '<tr>';
+    cells+=      '<th>漏洞ID</th>';
+    cells+=      '<th>漏洞名称</th>';
+    cells+=      '<th>选择状态</th>';
+    cells+=  '</tr>';
+    cells+='</thead>';
+    console.log('checkbox_state ', checkbox_state);
+    for ( var vul_id in vulSubdata) {
+        cell = '';
+        cell+= '<tr id="vul">';
+        cell+=   '<td>' + vul_id + '</td>';
+        cell+=   '<td>' + vulSubdata[vul_id].name + '</td>';
+        cell+=   '<td>';
+        cell+=      '<div class="hidden-sm hidden-xs btn-group">';
+        cell+=        '<label class="pos-rel">';
+        cell+=          '<input id="vulcheckbox-' + vul_id + '" type="checkbox" name="vulcheckbox" class="ace"' + ' ' + ( vulSubdata[vul_id].state === 1 ? 'checked' : '' ) + ' ' + 'onclick="check_vul(' + family_id + ', ' + vul_id + ')">';
+        cell+=          '<span class="lbl"></span>';
+        cell+=       '</label>';
+        cell+=     '</div>';
+        cell+=   '</td>';
+        cell+= '</tr>';
+        cells += cell;
+    }
+    $('#vulWrap').html(cells);
+}
+
+function check_vul(family_id, vul_id) {
+    var checkbox_state = $("#vulcheckbox-" + vul_id).prop("checked");
+    if (checkbox_state) {
+        vul_bak[family_id][vul_id].state = 1;
+    }
+    else {
+        vul_bak[family_id][vul_id].state = 0;
+    }
+}
+
+function check_family(family_id) {
+    var family_state = $("#familycheckbox-" + family_id).prop("checked");
+    if (family_state) {
+        for (var vul_id in vul_bak[family_id]) {
+            document.getElementById("vulcheckbox-" + vul_id).checked = true;
+            vul_bak[family_id][vul_id].state = 1;
+        }
+    }
+    else {
+        for (var vul_id in vul_bak[family_id]) {
+            document.getElementById("vulcheckbox-" + vul_id).checked = false;
+            vul_bak[family_id][vul_id].state = 0;
+        }
+    }
+}
+
+function check_all_family() {
+    var all_family_state = $("#checkall_family").prop("checked");
+    if (all_family_state) {
+        for (var family_id in family_bak) {
+            document.getElementById("familycheckbox-" + family_id).checked = true;
+            for (var vul_id in vul_bak[family_id]) {
+                vul_bak[family_id][vul_id].state = 1;
+            }
+        }
+    }
+    else {
+        for (var family_id in family_bak) {
+            document.getElementById("familycheckbox-" + family_id).checked = false;
+            for (var vul_id in vul_bak[family_id]) {
+                vul_bak[family_id][vul_id].state = 0;
+            }
+        }
+    }
+}
+
+
+function submit() {
+    var vul_result_array = make_vul_array(family_bak, vul_bak);
+    console.log("vul_init_array:",vul_init_array);
+    console.log("vul_result_array:",vul_result_array);
+    if (vul_result_array.sort().toString() == vul_init_array.sort().toString()) {
+        alert("未修改");
+    }
+    else {
+        var vul_result_json = JSON.stringify(vul_result_array);
+        update_policy(policy_id, vul_result_json);
+    }
+}
+
+{#function update_policy_name(policy_id, new_policy_name) {#}
+{#    $.ajax({#}
+{#            url: "{{ url_for('policy_name_update') }}",#}
+{#            type: "POST",#}
+{#            data: {policy_id:policy_id, policy_name:new_policy_name},#}
+{#            enctype: "multipart/form-data",#}
+{#            statusCode: {#}
+{#            403: function () {#}
+{#                alert("权限不足, 请联系管理员");#}
+{#            }#}
+{#        }#}
+{#        }).done(function (result) {#}
+{#            alert(result.desc);#}
+{#            if (result.status) {#}
+{#                //window.location.href = "{{ url_for('web.policy_info') }}";#}
+{#                window.location.reload()#}
+{#            }#}
+{#        });#}
+{#}#}
+
+function update_policy(policy_id, vul_result_json) {
+    if (window.confirm('是否_修改_')) {
+        $.ajax({
+            url: "{{ url_for('web.policy_update') }}",
+            type: "POST",
+            data: {policy_id:policy_id, vul_result_json:vul_result_json},
+            enctype: "multipart/form-data",
+            statusCode: {
+            403: function () {
+                alert("权限不足, 请联系管理员");
+            }
+        }
+        }).done(function (result) {
+            alert(result.desc);
+            if (result.status) {
+                //window.location.href = "{{ url_for('web.policy_info') }}";
+                window.location.reload()
+            }
+        });
+    }
+    else {
+        return false;
+    }
+}
+
+</script>
+{% endblock %}
